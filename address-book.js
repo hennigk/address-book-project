@@ -1,17 +1,12 @@
 var inquirer = require("inquirer");
-var prompt = require('prompt-promise');
+//var prompt = require('prompt-promise');
 var Promise = require("bluebird");
+//var prompt = require('prompt');
+
+//prompt = Promise.promisifyAll(prompt);
+inquirer = Promise.promisifyAll(inquirer);
 
 var addressBookArray = [];
-
-//function to change the usernames name to start with a 
-//capital letter and the rest be lowercase
-
-// function properName(inputName) { 
-//     var firstLetter = inputName.charAt(0).toUpperCase();
-//     var remainingName = inputName.slice(1).toLowerCase();
-//     return firstLetter + remainingName;   
-// }
 
 
 
@@ -101,17 +96,103 @@ var newEnteryQuestions = [
         message: 'Add an Address?',
         default: false
     },
-    
     {
         type: "checkbox",
-        message: "Add an Address for (select all that apply) \n use <space> to select, and <enter> to submit",
         name: "addressSelector",
+        message: "Add an Address for (select all that apply) \n use <space> to select, and <enter> to submit",
         choices: [{name: 'Home', checked: true}, 'Office', 'Other'],
         when: function(newEnteryAnswers) {
             return newEnteryAnswers.address; }
-    }
-    
+    },
 ];
+
+var newAddressQuestions = [
+    {
+        type: 'input',
+        name: 'address1',
+        message: "Address line 1: ",
+        validate: function(address1) {
+            if (!address1) { return "Enter a valid address"; }
+            else { return true; }
+        }
+    },
+    {
+        type: 'input',
+        name: 'address2',
+        message: "Address line 2 (optional): ",
+    },
+    {
+        type: 'input',
+        name: 'city',
+        message: "City: ",
+        validate: function(city) {
+            if (!city) { return "Enter a valid city"; }
+            else { return true; }
+        }
+    },
+    {
+        //this is valid for Canadian residents only
+        type: 'input',
+        name: 'postalCode',
+        message: "Postal Code: ",
+        filter: function(postalCode) {
+            return postalCode.replace(/\s+/g, '').toUpperCase(); //removes any spaces and changes it to uppercase
+        },
+        validate: function(postalCode) {
+            var postValidator = true;
+            if (postalCode.length !== 6) {
+                postValidator = false;
+            }
+            for (var i = 0; i < postalCode.length; i=i+2) {
+                if (!isNaN(postalCode.charAt(i))) { //verify that that there is a string at position 0, 2, 4 
+                    postValidator = false; }
+                if (isNaN(postalCode.charAt(i+1))){  //verify that that there is a number at position 1, 3,5 
+                    postValidator = false }
+            }
+            return postValidator || "enter a valid postal code";
+        }
+    },
+    {
+        type: 'input',
+        name: 'country',
+        message: 'Country: ',
+        default: 'Canada',
+        validate: function(country) {
+            if (!country) { return "Enter a valid country"; }
+            else { return true; }
+        } 
+    },
+    {
+        type: 'confirm',
+        name: 'phoneNumberSelector',
+        message: 'Add a phone number or fax number for this address?',
+        default: false
+    },
+    {
+        type: 'input',
+        name: 'phoneNumber',
+        message: "Phone/Fax Number: ",
+        filter: function(phoneNumber) { //removes all spaces
+            return phoneNumber.replace(/\s+/g, '');
+        },
+        validate: function(phoneNumber) { //checks length and if a number
+            if (!isNaN(phoneNumber) || phoneNumber.length < 10) {
+                return false; }
+            else { return true; }
+        },
+        when: function(newAddressAnswers) {
+            return newAddressAnswers.phoneNumberSelector; }
+    },
+    {
+        type: 'list',
+        name: 'phoneType',
+        message: 'Phone Type: ',
+        choices: ['cellular', 'landline', 'fax']
+    }
+]
+
+
+
 
 //start of the program. 
 console.log("\n Welcome to The Adress Book!");
@@ -119,7 +200,19 @@ console.log("\n Welcome to The Adress Book!");
 //call function to get users input for main menu
 inquirer.prompt(mainMenuQuestions, function(mainMenuAnswers) {
 	if (mainMenuAnswers.mainMenuInput === 1) {
-	    newEntery();
+	    //gets the new persons info and info about how many address to enter
+	    inquirer.prompt(newEnteryQuestions, function(newEnteryAnswers) { 
+            addressBookArray.push(newEnteryAnswers);
+            if (newEnteryAnswers.address){
+                //something wrong here.
+                for (var i = 0; i< newEnteryAnswers.addressSelector.length; i++) {
+                    inquirer.prompt(newAddressQuestions, function(newAddressAnswers) { 
+                        console.log(newAddressAnswers);
+                    });
+                }
+            }
+        
+        console.log(newEnteryAnswers); });
 	}
 	if (mainMenuAnswers.mainMenuInput === 2) {
 	    //call function searchBook
@@ -131,17 +224,21 @@ inquirer.prompt(mainMenuQuestions, function(mainMenuAnswers) {
 
 })
 
-//function to get the info from the user. 
-function newEntery(){
-    inquirer.prompt(newEnteryQuestions, function(newEnteryAnswers) { 
-        console.log(newEnteryAnswers);
-    })
-}
+// //function to get the info from the user. 
+// var newEnteryPromise = inquirer.prompt(newEnteryQuestions, function(newEnteryAnswers) { 
+//         console.log(newEnteryAnswers);
+//     })
+
+// function newEntery(){
+//     inquirer.prompt(newEnteryQuestions, function(newEnteryAnswers) { 
+//         console.log(newEnteryAnswers);
+//     })
+// }
 /*First name (mandatory) Yes
 Last name (mandatory) Yes
 Birthday (optional, any string is fine here) yes
 Enter Address?: choose all or none out of home, work, other
-If yes then ask for:
+If yes then ask for: yes
     Address line 1 (mandatory)
     Address line 2 (optional, any string is fine here)
     City (mandatory)
@@ -149,8 +246,8 @@ If yes then ask for:
     Postal code (mandatory)
     Country (mandatory)
 Enter Phone Number? ask if they need for home, work, other
-If Yes: 
-    Phone number (mandatory)
+If Yes:  
+    Phone number (mandatory) yes
     Phone type (mandatory):
     landline
     cellular
