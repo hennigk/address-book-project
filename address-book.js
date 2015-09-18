@@ -7,7 +7,7 @@ var Promise = require("bluebird");
 inquirer = Promise.promisifyAll(inquirer);
 
 var addressBookArray = [];
-
+var counter = 0;
 
 
 //questions for the main menu - uses type: list
@@ -27,7 +27,7 @@ var mainMenuQuestions = [
     } ];
 
 //questions for a new Enter
-var newEnteryQuestions = [
+var newEntryQuestions = [
     {
         type: 'input',
         name: 'firstName',
@@ -59,8 +59,8 @@ var newEnteryQuestions = [
         name: 'birthMonth',
         message: 'Month: ', 
         choices: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-        when: function(newEnteryAnswers) {
-            return newEnteryAnswers.birthday; }
+        when: function(newEntryAnswers) {
+            return newEntryAnswers.birthday; }
     },
     {
         type: 'input',
@@ -73,8 +73,8 @@ var newEnteryQuestions = [
                 return true
             }    
         },
-        when: function(newEnteryAnswers) {
-            return newEnteryAnswers.birthday; }
+        when: function(newEntryAnswers) {
+            return newEntryAnswers.birthday; }
     },
     {
         type: 'input',
@@ -87,8 +87,8 @@ var newEnteryQuestions = [
                 return true
             }    
         },
-        when: function(newEnteryAnswers) {
-            return newEnteryAnswers.birthday; }
+        when: function(newEntryAnswers) {
+            return newEntryAnswers.birthday; }
     },
     {
         type: 'confirm',
@@ -101,10 +101,21 @@ var newEnteryQuestions = [
         name: "addressSelector",
         message: "Add an Address for (select all that apply) \n use <space> to select, and <enter> to submit",
         choices: [{name: 'Home', checked: true}, 'Office', 'Other'],
-        when: function(newEnteryAnswers) {
-            return newEnteryAnswers.address; }
+        validate: function(addressSelector) {
+            if (addressSelector.length < 1 ) { return "you must select an address"; }
+            else { return true; }
+        },
+        when: function(newEntryAnswers) {
+            return newEntryAnswers.address; }
     },
 ];
+
+function createQuestionsArray(addressSelectorArray) {
+    
+}
+function Address(addressType) {
+    
+}
 
 var newAddressQuestions = [
     {
@@ -164,8 +175,8 @@ var newAddressQuestions = [
     },
     {
         type: 'confirm',
-        name: 'phoneNumberSelector',
-        message: 'Add a phone number or fax number for this address?',
+        name: 'phoneSelector',
+        message: 'Add a fax or phone number for this address?',
         default: false
     },
     {
@@ -176,18 +187,20 @@ var newAddressQuestions = [
             return phoneNumber.replace(/\s+/g, '');
         },
         validate: function(phoneNumber) { //checks length and if a number
-            if (!isNaN(phoneNumber) || phoneNumber.length < 10) {
-                return false; }
+            if (isNaN(phoneNumber) || phoneNumber.length < 10) {
+                return "Enter a valid phone number"; }
             else { return true; }
         },
         when: function(newAddressAnswers) {
-            return newAddressAnswers.phoneNumberSelector; }
+            return newAddressAnswers.phoneSelector; }
     },
     {
         type: 'list',
         name: 'phoneType',
         message: 'Phone Type: ',
-        choices: ['cellular', 'landline', 'fax']
+        choices: ['cellular', 'landline', 'fax'],
+        when: function(newAddressAnswers) {
+            return newAddressAnswers.phoneSelector; }
     },
     {
         type: 'confirm',
@@ -213,71 +226,44 @@ var newAddressQuestions = [
 
 
 //start of the program. 
-console.log("\n Welcome to The Adress Book!");
+console.log("\n Welcome to The Address Book!");
+
+
+function askNewEntry(){
+    inquirer.prompt(newEntryQuestions, function(newEntryAnswers) {
+        var entryInput = newEntryAnswers
+	        //addressBookArray.push(newEntryAnswers) 
+    if (newEntryAnswers.address) {
+        counter = 0;
+        console.log("\nAdd the : " + newEntryAnswers.addressSelector[counter] + " address \n")
+        getAddressAnswers(entryInput)
+    }
+	});
+}
 
 //call function to get users input for main menu
 inquirer.prompt(mainMenuQuestions, function(mainMenuAnswers) {
 	if (mainMenuAnswers.mainMenuInput === 1) {
 	    //gets the new persons info and info about how many address to enter
-	    inquirer.prompt(newEnteryQuestions, function(newEnteryAnswers) { 
-            addressBookArray.push(newEnteryAnswers);
-            if (newEnteryAnswers.address){
-                //something wrong here.
-                for (var i = 0; i< newEnteryAnswers.addressSelector.length; i++) {
-                    inquirer.prompt(newAddressQuestions, function(newAddressAnswers) { 
-                        console.log(newAddressAnswers);
-                    });
-                }
-            }
+	    askNewEntry();
+    }
+});
+
+
+                
+function getAddressAnswers(currentEntry){
+    inquirer.prompt(newAddressQuestions, function(newAddressAnswers) {
+        var addressProperty = "address"+ currentEntry.addressSelector[counter];
+        currentEntry[addressProperty] = newAddressAnswers
+        console.log(currentEntry);
+        counter +=1
+        if (counter < currentEntry.addressSelector.length) {
+            console.log("\nAdd the : " + currentEntry.addressSelector[counter] + " address \n")
+            getAddressAnswers(currentEntry); 
+        }
+        else {
+            addressBookArray.push(currentEntry);
+        }
         
-        console.log(newEnteryAnswers); });
-	}
-	if (mainMenuAnswers.mainMenuInput === 2) {
-	    //call function searchBook
-	}
-	if (mainMenuAnswers.mainMenuInput === 0) {
-	    console.log("Ending The Program \nGoodbye");
-	    //prompt.end();
-	}
-
-})
-
-// //function to get the info from the user. 
-// var newEnteryPromise = inquirer.prompt(newEnteryQuestions, function(newEnteryAnswers) { 
-//         console.log(newEnteryAnswers);
-//     })
-
-// function newEntery(){
-//     inquirer.prompt(newEnteryQuestions, function(newEnteryAnswers) { 
-//         console.log(newEnteryAnswers);
-//     })
-// }
-/*First name (mandatory) Yes
-Last name (mandatory) Yes
-Birthday (optional, any string is fine here) yes
-Enter Address?: choose all or none out of home, work, other
-If yes then ask for: yes
-    Address line 1 (mandatory)
-    Address line 2 (optional, any string is fine here)
-    City (mandatory)
-    Province (mandatory)
-    Postal code (mandatory)
-    Country (mandatory)
-Enter Phone Number? ask if they need for home, work, other
-If Yes:  
-    Phone number (mandatory) yes
-    Phone type (mandatory):
-    landline
-    cellular
-    fax
-Email? For each of home, work and other
-If Yes: 
-    Email address (mandatory)
-
-call function  Viewing an exiting address
-and view their entery.
-*/
-
-
-
-
+    });
+}
