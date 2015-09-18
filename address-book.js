@@ -62,7 +62,7 @@ var newEnteryQuestions = [
     { 
         type: 'list',
         name: 'birthMonth',
-        message: 'Month', 
+        message: 'Month: ', 
         choices: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
         when: function(newEnteryAnswers) {
             return newEnteryAnswers.birthday; }
@@ -70,7 +70,7 @@ var newEnteryQuestions = [
     {
         type: 'input',
         name: 'birthDay',
-        message: 'Day ',
+        message: 'Day: ',
         validate: function(birthDay) {
             if (birthDay > 31 || birthDay < 1 || isNaN(birthDay) ) {
                 return "Enter a valid day"; }
@@ -82,10 +82,33 @@ var newEnteryQuestions = [
             return newEnteryAnswers.birthday; }
     },
     {
+        type: 'input',
+        name: 'birthYear',
+        message: 'Year: ',
+        validate: function(birthYear) {
+            if (birthYear > 2015 || birthYear < 1000 || isNaN(birthYear) ) {
+                return "Enter a valid year"; }
+            else {
+                return true
+            }    
+        },
+        when: function(newEnteryAnswers) {
+            return newEnteryAnswers.birthday; }
+    },
+    {
+        type: 'confirm',
+        name: 'address',
+        message: 'Add an Address?',
+        default: false
+    },
+    
+    {
         type: "checkbox",
-        message: "Add Address for: \nSelect all that apply \n use the spacebar to make your selction, press enter to submit",
+        message: "Add an Address for (select all that apply) \n use <space> to select, and <enter> to submit",
         name: "addressSelector",
-        choices: ['Home', 'Office', 'Other']
+        choices: [{name: 'Home', checked: true}, 'Office', 'Other'],
+        when: function(newEnteryAnswers) {
+            return newEnteryAnswers.address; }
     }
     
 ];
