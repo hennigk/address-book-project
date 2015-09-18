@@ -188,7 +188,25 @@ var newAddressQuestions = [
         name: 'phoneType',
         message: 'Phone Type: ',
         choices: ['cellular', 'landline', 'fax']
-    }
+    },
+    {
+        type: 'confirm',
+        name: 'emailSelector',
+        message: 'Add an email address for this address?',
+        default: false
+    },
+    {
+        type: 'input',
+        name: 'email',
+        message: "Email Address: ",
+        validate: function(email) { 
+            if (email.indexOf(".") > 0 && email.indexOf("@") > 0) {
+                return true; }
+            else { return "enter a valid email address"; }
+        },
+        when: function(newAddressAnswers) {
+            return newAddressAnswers.emailSelector; }
+    },
 ]
 
 
