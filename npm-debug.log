@@ -1,0 +1,234 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/home/ubuntu/.nvm/v0.10.35/bin/node',
+1 verbose cli   '/home/ubuntu/.nvm/v0.10.35/bin/npm',
+1 verbose cli   'install',
+1 verbose cli   '–',
+1 verbose cli   'save',
+1 verbose cli   'prompt-promise' ]
+2 info using npm@1.4.28
+3 info using node@v0.10.35
+4 verbose readDependencies using package.json deps
+5 verbose cache add [ '–', null ]
+6 verbose cache add name=undefined spec="–" args=["–",null]
+7 verbose parsed url { protocol: null,
+7 verbose parsed url   slashes: null,
+7 verbose parsed url   auth: null,
+7 verbose parsed url   host: null,
+7 verbose parsed url   port: null,
+7 verbose parsed url   hostname: null,
+7 verbose parsed url   hash: null,
+7 verbose parsed url   search: null,
+7 verbose parsed url   query: null,
+7 verbose parsed url   pathname: '–',
+7 verbose parsed url   path: '–',
+7 verbose parsed url   href: '–' }
+8 verbose cache add [ 'save', null ]
+9 verbose cache add name=undefined spec="save" args=["save",null]
+10 verbose parsed url { protocol: null,
+10 verbose parsed url   slashes: null,
+10 verbose parsed url   auth: null,
+10 verbose parsed url   host: null,
+10 verbose parsed url   port: null,
+10 verbose parsed url   hostname: null,
+10 verbose parsed url   hash: null,
+10 verbose parsed url   search: null,
+10 verbose parsed url   query: null,
+10 verbose parsed url   pathname: 'save',
+10 verbose parsed url   path: 'save',
+10 verbose parsed url   href: 'save' }
+11 verbose cache add [ 'prompt-promise', null ]
+12 verbose cache add name=undefined spec="prompt-promise" args=["prompt-promise",null]
+13 verbose parsed url { protocol: null,
+13 verbose parsed url   slashes: null,
+13 verbose parsed url   auth: null,
+13 verbose parsed url   host: null,
+13 verbose parsed url   port: null,
+13 verbose parsed url   hostname: null,
+13 verbose parsed url   hash: null,
+13 verbose parsed url   search: null,
+13 verbose parsed url   query: null,
+13 verbose parsed url   pathname: 'prompt-promise',
+13 verbose parsed url   path: 'prompt-promise',
+13 verbose parsed url   href: 'prompt-promise' }
+14 silly lockFile 5a8ca84c- –
+15 verbose lock – /home/ubuntu/.npm/5a8ca84c-.lock
+16 silly lockFile 13a4a113-save save
+17 verbose lock save /home/ubuntu/.npm/13a4a113-save.lock
+18 silly lockFile d5b41c9c-prompt-promise prompt-promise
+19 verbose lock prompt-promise /home/ubuntu/.npm/d5b41c9c-prompt-promise.lock
+20 silly lockFile 5a8ca84c- –
+21 silly lockFile 5a8ca84c- –
+22 silly lockFile 13a4a113-save save
+23 silly lockFile 13a4a113-save save
+24 silly lockFile d5b41c9c-prompt-promise prompt-promise
+25 silly lockFile d5b41c9c-prompt-promise prompt-promise
+26 verbose addNamed [ '–', '' ]
+27 verbose addNamed [ null, '*' ]
+28 silly lockFile a89fc9f6- –@
+29 verbose lock –@ /home/ubuntu/.npm/a89fc9f6-.lock
+30 verbose addNamed [ 'save', '' ]
+31 verbose addNamed [ null, '*' ]
+32 silly lockFile c71f9f9a-save save@
+33 verbose lock save@ /home/ubuntu/.npm/c71f9f9a-save.lock
+34 verbose addNamed [ 'prompt-promise', '' ]
+35 verbose addNamed [ null, '*' ]
+36 silly lockFile f1a31ab6-prompt-promise prompt-promise@
+37 verbose lock prompt-promise@ /home/ubuntu/.npm/f1a31ab6-prompt-promise.lock
+38 silly addNameRange { name: '–', range: '*', hasData: false }
+39 silly addNameRange { name: 'save', range: '*', hasData: false }
+40 silly addNameRange { name: 'prompt-promise', range: '*', hasData: false }
+41 verbose request where is /–
+42 verbose request registry https://registry.npmjs.org/
+43 verbose request id f2fe2b9991ea8ca3
+44 verbose url raw /–
+45 verbose url resolving [ 'https://registry.npmjs.org/', './%E2%80%93' ]
+46 verbose url resolved https://registry.npmjs.org/%E2%80%93
+47 verbose request where is https://registry.npmjs.org/%E2%80%93
+48 info trying registry request attempt 1 at 15:02:15
+49 http GET https://registry.npmjs.org/%E2%80%93
+50 verbose request where is /save
+51 verbose request registry https://registry.npmjs.org/
+52 verbose url raw /save
+53 verbose url resolving [ 'https://registry.npmjs.org/', './save' ]
+54 verbose url resolved https://registry.npmjs.org/save
+55 verbose request where is https://registry.npmjs.org/save
+56 info trying registry request attempt 1 at 15:02:15
+57 http GET https://registry.npmjs.org/save
+58 verbose request where is /prompt-promise
+59 verbose request registry https://registry.npmjs.org/
+60 verbose url raw /prompt-promise
+61 verbose url resolving [ 'https://registry.npmjs.org/', './prompt-promise' ]
+62 verbose url resolved https://registry.npmjs.org/prompt-promise
+63 verbose request where is https://registry.npmjs.org/prompt-promise
+64 info trying registry request attempt 1 at 15:02:15
+65 http GET https://registry.npmjs.org/prompt-promise
+66 http 200 https://registry.npmjs.org/prompt-promise
+67 silly registry.get cb [ 200,
+67 silly registry.get   { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+67 silly registry.get     etag: '"AIT40D6SVA65TW43L2N15BD84"',
+67 silly registry.get     'content-type': 'application/json',
+67 silly registry.get     'cache-control': 'max-age=60',
+67 silly registry.get     'content-length': '12704',
+67 silly registry.get     'accept-ranges': 'bytes',
+67 silly registry.get     date: 'Fri, 18 Sep 2015 15:02:15 GMT',
+67 silly registry.get     via: '1.1 varnish',
+67 silly registry.get     age: '0',
+67 silly registry.get     connection: 'keep-alive',
+67 silly registry.get     'x-served-by': 'cache-ord1721-ORD',
+67 silly registry.get     'x-cache': 'MISS',
+67 silly registry.get     'x-cache-hits': '0',
+67 silly registry.get     'x-timer': 'S1442588535.252292,VS0,VE71',
+67 silly registry.get     vary: 'Accept' } ]
+68 http 200 https://registry.npmjs.org/save
+69 silly registry.get cb [ 200,
+69 silly registry.get   { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+69 silly registry.get     etag: '"D2ZAPH23JWDQQP0TY27POY9CR"',
+69 silly registry.get     'content-type': 'application/json',
+69 silly registry.get     'cache-control': 'max-age=60',
+69 silly registry.get     'content-length': '30357',
+69 silly registry.get     'accept-ranges': 'bytes',
+69 silly registry.get     date: 'Fri, 18 Sep 2015 15:02:15 GMT',
+69 silly registry.get     via: '1.1 varnish',
+69 silly registry.get     age: '0',
+69 silly registry.get     connection: 'keep-alive',
+69 silly registry.get     'x-served-by': 'cache-ord1733-ORD',
+69 silly registry.get     'x-cache': 'MISS',
+69 silly registry.get     'x-cache-hits': '0',
+69 silly registry.get     'x-timer': 'S1442588535.245128,VS0,VE69',
+69 silly registry.get     vary: 'Accept' } ]
+70 silly addNameRange number 2 { name: 'prompt-promise', range: '*', hasData: true }
+71 silly addNameRange versions [ 'prompt-promise',
+71 silly addNameRange   [ '0.0.0', '1.0.0', '1.0.1', '1.0.2', '1.0.3' ] ]
+72 verbose addNamed [ 'prompt-promise', '1.0.3' ]
+73 verbose addNamed [ '1.0.3', '1.0.3' ]
+74 silly lockFile 7f64b1d2-prompt-promise-1-0-3 prompt-promise@1.0.3
+75 verbose lock prompt-promise@1.0.3 /home/ubuntu/.npm/7f64b1d2-prompt-promise-1-0-3.lock
+76 silly addNameRange number 2 { name: 'save', range: '*', hasData: true }
+77 silly addNameRange versions [ 'save',
+77 silly addNameRange   [ '0.0.1',
+77 silly addNameRange     '0.0.2',
+77 silly addNameRange     '0.0.3',
+77 silly addNameRange     '0.0.4',
+77 silly addNameRange     '0.0.5',
+77 silly addNameRange     '0.0.6',
+77 silly addNameRange     '0.0.7',
+77 silly addNameRange     '0.0.8',
+77 silly addNameRange     '0.0.9',
+77 silly addNameRange     '0.0.10',
+77 silly addNameRange     '0.0.11',
+77 silly addNameRange     '0.0.12',
+77 silly addNameRange     '0.0.13',
+77 silly addNameRange     '0.0.14',
+77 silly addNameRange     '0.0.15',
+77 silly addNameRange     '0.0.16',
+77 silly addNameRange     '0.0.17',
+77 silly addNameRange     '0.0.18',
+77 silly addNameRange     '0.0.19',
+77 silly addNameRange     '0.0.20',
+77 silly addNameRange     '1.0.1',
+77 silly addNameRange     '2.0.0',
+77 silly addNameRange     '2.1.0',
+77 silly addNameRange     '2.1.1' ] ]
+78 verbose addNamed [ 'save', '2.1.1' ]
+79 verbose addNamed [ '2.1.1', '2.1.1' ]
+80 silly lockFile c100c497-save-2-1-1 save@2.1.1
+81 verbose lock save@2.1.1 /home/ubuntu/.npm/c100c497-save-2-1-1.lock
+82 silly lockFile 3a9eea41-promise-prompt-promise-1-0-3-tgz https://registry.npmjs.org/prompt-promise/-/prompt-promise-1.0.3.tgz
+83 verbose lock https://registry.npmjs.org/prompt-promise/-/prompt-promise-1.0.3.tgz /home/ubuntu/.npm/3a9eea41-promise-prompt-promise-1-0-3-tgz.lock
+84 silly lockFile 62c3ba94-ry-npmjs-org-save-save-2-1-1-tgz https://registry.npmjs.org/save/-/save-2.1.1.tgz
+85 verbose lock https://registry.npmjs.org/save/-/save-2.1.1.tgz /home/ubuntu/.npm/62c3ba94-ry-npmjs-org-save-save-2-1-1-tgz.lock
+86 verbose addRemoteTarball [ 'https://registry.npmjs.org/prompt-promise/-/prompt-promise-1.0.3.tgz',
+86 verbose addRemoteTarball   '78ce4fcb9a14a108c49174f2d808c440d1bde265' ]
+87 verbose addRemoteTarball [ 'https://registry.npmjs.org/save/-/save-2.1.1.tgz',
+87 verbose addRemoteTarball   '2823255f0ec0b3914f05e84bb6d70a6b3b94ac54' ]
+88 info retry fetch attempt 1 at 15:02:15
+89 verbose fetch to= /tmp/npm-13444-LL0QklWe/registry.npmjs.org/prompt-promise/-/prompt-promise-1.0.3.tgz
+90 http GET https://registry.npmjs.org/prompt-promise/-/prompt-promise-1.0.3.tgz
+91 info retry fetch attempt 1 at 15:02:15
+92 verbose fetch to= /tmp/npm-13444-LL0QklWe/registry.npmjs.org/save/-/save-2.1.1.tgz
+93 http GET https://registry.npmjs.org/save/-/save-2.1.1.tgz
+94 http 404 https://registry.npmjs.org/%E2%80%93
+95 silly registry.get cb [ 404,
+95 silly registry.get   { 'content-type': 'application/json',
+95 silly registry.get     'cache-control': 'max-age=0',
+95 silly registry.get     'content-length': '65',
+95 silly registry.get     'accept-ranges': 'bytes',
+95 silly registry.get     date: 'Fri, 18 Sep 2015 15:02:15 GMT',
+95 silly registry.get     via: '1.1 varnish',
+95 silly registry.get     age: '0',
+95 silly registry.get     connection: 'keep-alive',
+95 silly registry.get     'x-served-by': 'cache-ord1722-ORD',
+95 silly registry.get     'x-cache': 'MISS',
+95 silly registry.get     'x-cache-hits': '0',
+95 silly registry.get     'x-timer': 'S1442588535.237932,VS0,VE252' } ]
+96 silly lockFile a89fc9f6- –@
+97 silly lockFile a89fc9f6- –@
+98 http 200 https://registry.npmjs.org/save/-/save-2.1.1.tgz
+99 silly lockFile 62c3ba94-ry-npmjs-org-save-save-2-1-1-tgz https://registry.npmjs.org/save/-/save-2.1.1.tgz
+100 silly lockFile 62c3ba94-ry-npmjs-org-save-save-2-1-1-tgz https://registry.npmjs.org/save/-/save-2.1.1.tgz
+101 silly lockFile c100c497-save-2-1-1 save@2.1.1
+102 silly lockFile c100c497-save-2-1-1 save@2.1.1
+103 silly lockFile c71f9f9a-save save@
+104 silly lockFile c71f9f9a-save save@
+105 http 200 https://registry.npmjs.org/prompt-promise/-/prompt-promise-1.0.3.tgz
+106 silly lockFile 3a9eea41-promise-prompt-promise-1-0-3-tgz https://registry.npmjs.org/prompt-promise/-/prompt-promise-1.0.3.tgz
+107 silly lockFile 3a9eea41-promise-prompt-promise-1-0-3-tgz https://registry.npmjs.org/prompt-promise/-/prompt-promise-1.0.3.tgz
+108 silly lockFile 7f64b1d2-prompt-promise-1-0-3 prompt-promise@1.0.3
+109 silly lockFile 7f64b1d2-prompt-promise-1-0-3 prompt-promise@1.0.3
+110 silly lockFile f1a31ab6-prompt-promise prompt-promise@
+111 silly lockFile f1a31ab6-prompt-promise prompt-promise@
+112 error 404 Not Found
+112 error 404
+112 error 404 '–' is not in the npm registry.
+112 error 404 You should bug the author to publish it
+112 error 404 It was specified as a dependency of 'address-book-project'
+112 error 404
+112 error 404 Note that you can also install from a
+112 error 404 tarball, folder, or http url, or git url.
+113 error System Linux 3.14.13-c9
+114 error command "/home/ubuntu/.nvm/v0.10.35/bin/node" "/home/ubuntu/.nvm/v0.10.35/bin/npm" "install" "–" "save" "prompt-promise"
+115 error cwd /home/ubuntu/workspace
+116 error node -v v0.10.35
+117 error npm -v 1.4.28
+118 error code E404
+119 verbose exit [ 1, true ]

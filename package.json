@@ -1,0 +1,31 @@
+{
+  "name": "address-book-project",
+  "version": "1.0.0",
+  "description": "a command line address book program",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hennigk/address-book-project.git"
+  },
+  "keywords": [
+    "commandline",
+    "address",
+    "book",
+    "decodeMtl"
+  ],
+  "author": "Kayla",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hennigk/address-book-project/issues"
+  },
+  "homepage": "https://github.com/hennigk/address-book-project",
+  "dependencies": {
+    "bluebird": "^2.10.0",
+    "cli-table": "^0.3.1",
+    "inquirer": "^0.10.0",
+    "prompt-promise": "^1.0.3"
+  }
+}
