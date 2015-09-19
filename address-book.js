@@ -26,22 +26,30 @@ var newEntryQuestions = [
     {
         type: 'input',
         name: 'First Name',
-        default: 'John',
-        message: 'First Name (manditory): ',
+        message: 'First Name (mandatory): ',
         filter: function (inputName) { 
             var firstLetter = inputName.charAt(0).toUpperCase();
             var remainingName = inputName.slice(1).toLowerCase();
-            return firstLetter + remainingName; }
+            return firstLetter + remainingName; },
+        validate: function(inputName){
+            if (!isNaN(inputName) || inputName.length < 2){
+                return "enter a valid name"; }
+            else {return true; }
+            }
     },
     {
         type: 'input',
         name: 'Last Name',
-        default: 'Doe',
-        message: 'Last Name (manditory): ',
+        message: 'Last Name (mandatory): ',
         filter: function (inputName) { 
             var firstLetter = inputName.charAt(0).toUpperCase();
             var remainingName = inputName.slice(1).toLowerCase();
-            return firstLetter + remainingName; }    
+            return firstLetter + remainingName; },  
+        validate: function(inputName){
+            if (!isNaN(inputName) || inputName.length < 2){
+                return "enter a valid name"; }
+            else {return true; }
+            }
     },
     {
         type: 'confirm',
