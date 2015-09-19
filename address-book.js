@@ -1,10 +1,6 @@
 var inquirer = require("inquirer");
-//var prompt = require('prompt-promise');
 var Promise = require("bluebird");
-//var prompt = require('prompt');
-
-//prompt = Promise.promisifyAll(prompt);
-inquirer = Promise.promisifyAll(inquirer);
+var Table = require('cli-table');
 
 var addressBookArray = [];
 var counter = 0;
@@ -238,6 +234,10 @@ function askNewEntry(){
         console.log("\nAdd the : " + newEntryAnswers.addressSelector[counter] + " address \n")
         getAddressAnswers(entryInput)
     }
+    else {
+        addressBookArray.push(entryInput);
+        buildTable();
+    }
 	});
 }
 
@@ -263,7 +263,28 @@ function getAddressAnswers(currentEntry){
         }
         else {
             addressBookArray.push(currentEntry);
+            buildTable();
         }
         
     });
 }
+
+var table = new Table();
+
+function buildTable(){
+var keyArray = [];
+counter = 0;
+
+for (var property in addressBookArray[0])
+
+table.push(
+    [property, addressBookArray[0][property]]
+);
+console.log(table.toString());
+}
+
+//if false - remove property
+//display contents with objects 
+//maybe stringify my objects into one line.
+//or remove my properties called selectors
+
