@@ -3,7 +3,6 @@ var Promise = require("bluebird");
 var Table = require('cli-table');
 
 var addressBookArray = [];
-var counter = 0;
 
 
 //questions for the main menu - uses type: list
@@ -26,7 +25,7 @@ var mainMenuQuestions = [
 var newEntryQuestions = [
     {
         type: 'input',
-        name: 'firstName',
+        name: 'First Name',
         default: 'John',
         message: 'First Name (manditory): ',
         filter: function (inputName) { 
@@ -36,7 +35,7 @@ var newEntryQuestions = [
     },
     {
         type: 'input',
-        name: 'lastName',
+        name: 'Last Name',
         default: 'Doe',
         message: 'Last Name (manditory): ',
         filter: function (inputName) { 
@@ -46,7 +45,7 @@ var newEntryQuestions = [
     },
     {
         type: 'confirm',
-        name: 'birthday',
+        name: 'Birthday',
         message: 'Add Date of Birth?',
         default: false
     },
@@ -56,7 +55,7 @@ var newEntryQuestions = [
         message: 'Month: ', 
         choices: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
         when: function(newEntryAnswers) {
-            return newEntryAnswers.birthday; }
+            return newEntryAnswers.Birthday; }
     },
     {
         type: 'input',
@@ -66,11 +65,11 @@ var newEntryQuestions = [
             if (birthDay > 31 || birthDay < 1 || isNaN(birthDay) ) {
                 return "Enter a valid day"; }
             else {
-                return true
+                return true;
             }    
         },
         when: function(newEntryAnswers) {
-            return newEntryAnswers.birthday; }
+            return newEntryAnswers.Birthday; }
     },
     {
         type: 'input',
@@ -80,11 +79,11 @@ var newEntryQuestions = [
             if (birthYear > 2015 || birthYear < 1000 || isNaN(birthYear) ) {
                 return "Enter a valid year"; }
             else {
-                return true
+                return true;
             }    
         },
         when: function(newEntryAnswers) {
-            return newEntryAnswers.birthday; }
+            return newEntryAnswers.Birthday; }
     },
     {
         type: 'confirm',
@@ -106,17 +105,11 @@ var newEntryQuestions = [
     },
 ];
 
-function createQuestionsArray(addressSelectorArray) {
-    
-}
-function Address(addressType) {
-    
-}
 
 var newAddressQuestions = [
     {
         type: 'input',
-        name: 'address1',
+        name: 'Address1',
         message: "Address line 1: ",
         validate: function(address1) {
             if (!address1) { return "Enter a valid address"; }
@@ -125,12 +118,12 @@ var newAddressQuestions = [
     },
     {
         type: 'input',
-        name: 'address2',
+        name: 'Address2',
         message: "Address line 2 (optional): ",
     },
     {
         type: 'input',
-        name: 'city',
+        name: 'City',
         message: "City: ",
         validate: function(city) {
             if (!city) { return "Enter a valid city"; }
@@ -138,9 +131,18 @@ var newAddressQuestions = [
         }
     },
     {
+        type: 'input',
+        name: 'Province',
+        message: "Province: ",
+        validate: function(province) {
+            if (!province) { return "Enter a valid city"; }
+            else { return true; }
+        }
+    },
+    {
         //this is valid for Canadian residents only
         type: 'input',
-        name: 'postalCode',
+        name: 'Postal Code',
         message: "Postal Code: ",
         filter: function(postalCode) {
             return postalCode.replace(/\s+/g, '').toUpperCase(); //removes any spaces and changes it to uppercase
@@ -161,7 +163,7 @@ var newAddressQuestions = [
     },
     {
         type: 'input',
-        name: 'country',
+        name: 'Country',
         message: 'Country: ',
         default: 'Canada',
         validate: function(country) {
@@ -177,7 +179,7 @@ var newAddressQuestions = [
     },
     {
         type: 'input',
-        name: 'phoneNumber',
+        name: 'Phone Number',
         message: "Phone/Fax Number: ",
         filter: function(phoneNumber) { //removes all spaces
             return phoneNumber.replace(/\s+/g, '');
@@ -192,7 +194,7 @@ var newAddressQuestions = [
     },
     {
         type: 'list',
-        name: 'phoneType',
+        name: 'Phone Type',
         message: 'Phone Type: ',
         choices: ['cellular', 'landline', 'fax'],
         when: function(newAddressAnswers) {
@@ -206,7 +208,7 @@ var newAddressQuestions = [
     },
     {
         type: 'input',
-        name: 'email',
+        name: 'Email',
         message: "Email Address: ",
         validate: function(email) { 
             if (email.indexOf(".") > 0 && email.indexOf("@") > 0) {
@@ -216,7 +218,7 @@ var newAddressQuestions = [
         when: function(newAddressAnswers) {
             return newAddressAnswers.emailSelector; }
     },
-]
+];
 
 
 
@@ -227,16 +229,17 @@ console.log("\n Welcome to The Address Book!");
 
 function askNewEntry(){
     inquirer.prompt(newEntryQuestions, function(newEntryAnswers) {
-        var entryInput = newEntryAnswers
+        var entryInput = newEntryAnswers;
 	        //addressBookArray.push(newEntryAnswers) 
     if (newEntryAnswers.address) {
-        counter = 0;
-        console.log("\nAdd the : " + newEntryAnswers.addressSelector[counter] + " address \n")
-        getAddressAnswers(entryInput)
+        var counter = 0;
+        console.log("\nAdd the : " + newEntryAnswers.addressSelector[counter] + " address \n");
+        getAddressAnswers(entryInput, counter);
     }
     else {
         addressBookArray.push(entryInput);
-        buildTable();
+        console.log(addressBookArray);
+        buildTable(addressBookArray.length - 1);
     }
 	});
 }
@@ -251,40 +254,72 @@ inquirer.prompt(mainMenuQuestions, function(mainMenuAnswers) {
 
 
                 
-function getAddressAnswers(currentEntry){
+function getAddressAnswers(currentEntry, counter){
     inquirer.prompt(newAddressQuestions, function(newAddressAnswers) {
-        var addressProperty = "address"+ currentEntry.addressSelector[counter];
-        currentEntry[addressProperty] = newAddressAnswers
-        console.log(currentEntry);
-        counter +=1
+        var addressProperty = currentEntry.addressSelector[counter];
+        currentEntry[addressProperty] = newAddressAnswers;
+        counter +=1;
         if (counter < currentEntry.addressSelector.length) {
-            console.log("\nAdd the : " + currentEntry.addressSelector[counter] + " address \n")
-            getAddressAnswers(currentEntry); 
+            console.log("\nAdd the : " + currentEntry.addressSelector[counter] + " address \n");
+            getAddressAnswers(currentEntry, counter); 
         }
         else {
             addressBookArray.push(currentEntry);
-            buildTable();
+            console.log(addressBookArray);
+            buildTable(addressBookArray.length - 1);
         }
         
     });
 }
 
-var table = new Table();
 
-function buildTable(){
-var keyArray = [];
-counter = 0;
 
-for (var property in addressBookArray[0])
 
-table.push(
-    [property, addressBookArray[0][property]]
-);
-console.log(table.toString());
+
+
+function buildTable(entryPosition){
+    var table = new Table();
+    var addressInput = addressBookArray[entryPosition];
+    for (var property in addressInput) {
+        if (property === "addressSelector" || property === "address") {
+            delete addressInput[property];   
+        }
+    }
+    addressInput["Emails"] = "" ;
+    addressInput["Phone Numbers"] = "";
+    
+    if (addressInput.Birthday) {
+        addressInput.Birthday = addressInput.birthMonth + " " + addressInput.birthDay + ", " + addressInput.birthYear;
+        delete addressInput.birthMonth;
+        delete addressInput.birthDay;
+        delete addressInput.birthYear;
+    }
+    
+    for (var property in addressInput) {
+        if (typeof addressInput[property] === 'object') {
+            if (addressInput[property].phoneSelector){
+                addressInput["Phone Numbers"] += property + "(" + addressInput[property]["Phone Type"] + "): " + addressInput[property]["Phone Number"] + "\n";
+            }
+            if (addressInput[property].emailSelector){
+                addressInput["Emails"] += property + ": " +  addressInput[property]["Email"] + "\n";
+            }
+            delete addressInput[property].emailSelector;
+            delete addressInput[property].phoneSelector;
+            var addressString = addressInput[property].Address1 + ", " + addressInput[property].Address2 + "\n";
+            addressString +=  addressInput[property].City + ", " + addressInput[property]["Province"] + ", " + addressInput[property]["Postal Code"] + "\n";
+            addressString +=  addressInput[property].Country;
+            addressInput[property + " Address"] = addressString;
+            delete addressInput[property];
+            
+        }
+    }
+    for (var property in addressInput) {
+        table.push(
+        [property, addressInput[property]] );
+    }
+    addressBookArray[entryPosition] = addressInput;
+    console.log(addressBookArray[entryPosition]);
+    console.log(table.toString());
+    
 }
-
-//if false - remove property
-//display contents with objects 
-//maybe stringify my objects into one line.
-//or remove my properties called selectors
 
