@@ -166,7 +166,7 @@ var newAddressQuestions = [
         validate: function(postalCode) {
             var validPostCode = postalCode.replace(/\s+/g, '');
             var postValidator = true;
-            if (postalCode.length !== 6) {
+            if (validPostCode.length !== 6) {
                 postValidator = false;
             }
             for (var i = 0; i < validPostCode.length; i=i+2) {
@@ -307,6 +307,7 @@ function formatInput(currentEntry){
         delete currentEntry.birthYear;
     }
     addressBookArray.push(currentEntry);
+    console.log(addressBookArray);
     buildTable();
 }
 
@@ -345,52 +346,88 @@ function buildTable() {
     console.log(table.toString());
 }
 
+//filler for testing the addressBook Array 
+addressBookArray[1] = {
+    'First Name': 'Kayla',
+    'Last Name': 'Hennig',
+    Birthday: 'July 30, 1990',
+    Home: 
+     { Address1: '1360 st. jacques',
+       Address2: 'apt. 501',
+       City: 'Montreal',
+       Province: 'QC',
+       'Postal Code': 'H3C 4M4',
+       Country: 'Canada',
+       phoneSelector: true,
+       'Phone Type': 'landline',
+       'Phone Number': '546-678-9585',
+       emailSelector: true,
+       Email: 'kayla.hennig@gmail.com' 
+     }
+};
 
-
-/*
-function buildTable(entryPosition){
-    var table = new Table();
-    var addressInput = addressBookArray[entryPosition];
-    for (var property in addressInput) {
-        if (property === "addressSelector" || property === "address") {
-            delete addressInput[property];   
-        }
-    }
-    addressInput["Emails"] = "" ;
-    addressInput["Phone Numbers"] = "";
-    
-    // if (addressInput.Birthday) {
-    //     addressInput.Birthday = addressInput.birthMonth + " " + addressInput.birthDay + ", " + addressInput.birthYear;
-    //     delete addressInput.birthMonth;
-    //     delete addressInput.birthDay;
-    //     delete addressInput.birthYear;
-    // }
-    
-    for (var property in addressInput) {
-        if (typeof addressInput[property] === 'object') {
-            // if (addressInput[property].phoneSelector){
-            //     addressInput["Phone Numbers"] += property + "(" + addressInput[property]["Phone Type"] + "): " + addressInput[property]["Phone Number"] + "\n";
-            // }
-            // if (addressInput[property].emailSelector){
-            //     addressInput["Emails"] += property + ": " +  addressInput[property]["Email"] + "\n";
-            }
-            delete addressInput[property].emailSelector;
-            delete addressInput[property].phoneSelector;
-            var addressString = addressInput[property].Address1 + ", " + addressInput[property].Address2 + "\n";
-            addressString +=  addressInput[property].City + ", " + addressInput[property]["Province"] + ", " + addressInput[property]["Postal Code"] + "\n";
-            addressString +=  addressInput[property].Country;
-            addressInput[property + " Address"] = addressString;
-            delete addressInput[property];
-            
-        }
-    }
-    for (var property in addressInput) {
-        table.push(
-        [property, addressInput[property]] );
-    }
-    addressBookArray[entryPosition] = addressInput;
-    console.log(addressBookArray[entryPosition]);
-    console.log(table.toString());
-    
-}
-*/
+addressBookArray[2] = {
+    'First Name': 'David',
+    'Last Name': 'Fortin',
+    Birthday: 'January 4, 1987',
+    Home: 
+     { Address1: '4 fake street',
+       Address2: '',
+       City: 'Montreal',
+       Province: 'AB',
+       'Postal Code': 'H3D 4T4',
+       Country: 'Canada',
+       phoneSelector: true,
+       'Phone Type': 'landline',
+       'Phone Number': '546-678-9551',
+       emailSelector: true,
+       Email: 'dave@gmail.com' },
+    Office: 
+     { Address1: '4567 viger street',
+       Address2: 'suite 201',
+       City: 'Edmonton',
+       Province: 'AB',
+       'Postal Code': 'H4D 5M6',
+       Country: 'Canada',
+       phoneSelector: false,
+       emailSelector: false },
+    Other: 
+     { Address1: '453 road',
+       Address2: 'apt. 5',
+       City: 'Fonthill',
+       Province: 'ON',
+       'Postal Code': 'L0S 1E2',
+       Country: 'Canada',
+       phoneSelector: true,
+       'Phone Type': 'fax',
+       'Phone Number': '567-847-4948',
+       emailSelector: true,
+       Email: 'david.fortin@mail.com' } 
+};
+addressBookArray[3] = {
+    'First Name': 'Beijo',
+    'Last Name': 'Hennig',
+    Birthday: 'January 18, 1909',
+    Office: 
+     { Address1: '4567 road street',
+       Address2: 'suite 201',
+       City: 'Edmonton',
+       Province: 'AB',
+       'Postal Code': 'H4D 5M6',
+       Country: 'Canada',
+       phoneSelector: false,
+       emailSelector: true,
+       Email: 'beijo@mail.com'},
+    Other: 
+     { Address1: '453 crate',
+       Address2: '',
+       City: 'Fonthill',
+       Province: 'ON',
+       'Postal Code': 'L0S 1E2',
+       Country: 'Canada',
+       phoneSelector: true,
+       'Phone Type': 'fax',
+       'Phone Number': '567-847-4948',
+       emailSelector: true,
+       Email: 'beijo.the.dog@mail.com' } 
+};
