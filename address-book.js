@@ -2,15 +2,14 @@ var inquirer = require("inquirer");
 var Promise = require("bluebird");
 var Table = require('cli-table');
 
-var addressBookArray = [];
-
+var addressBookArray = []
 
 //questions for the main menu - uses type: list
 var mainMenuQuestions = [
     {
     type: 'list', 
     name: 'mainMenuInput', 
-    message: "Main Menu \n Select one of the following options:",
+    message: "Select one of the following options:",
     choices: [ 
         { name: 'Create a new address book entry',
         value: 1 },
@@ -117,7 +116,7 @@ var newEntryQuestions = [
     },
 ];
 
-
+//list of prompts if the user selects the option to enter an address
 var newAddressQuestions = [
     {
         type: 'input',
@@ -240,12 +239,65 @@ var newAddressQuestions = [
     },
 ];
 
+//prompts for the search function
+var searchQuestion = [
+    {
+        type: 'input',
+        name: 'searchName',
+        message: 'Search: ',
+        //verifies that input is not a number and is longer than 1 character
+        validate: function(inputName){
+            if (!isNaN(inputName) || inputName.length < 1){
+                return "enter a valid name"; }
+            else {return true; }
+        }
+    }
+];
+
+var viewSearchQuestion = [ 
+    {
+    type: 'list',
+    name: 'viewSearch',
+    message: "choose one of the following options: ",
+    choices: [
+        {name: "Edit the current entry",
+        value: "edit" },
+        {name: "Delete the current entry", 
+        value: "delete" },
+        {name: "Go back to the main menu",
+        value: "menu"} ]
+    },
+    {
+        type: 'confirm',
+        name: 'confirmDelete',
+        message: 'Are you sure you want to delete this entry?',
+        default: false
+    },
+];
 
 
 
+
+
+function mainMenu(){
 //start of the program. 
-console.log("\n Welcome to The Address Book!");
-
+console.log("\nMain Menu");
+//call function to get users input for main menu
+inquirer.prompt(mainMenuQuestions, function(mainMenuAnswers) {
+	if (mainMenuAnswers.mainMenuInput === 1) {
+	    //calls function to begin new entry prompts
+	    return askNewEntry();
+    }
+    else if (mainMenuAnswers.mainMenuInput === 2) {
+        //calls function to begin search prompts
+        return getSearchInput();
+    }
+    else {
+        console.log("\ngoodbye");
+        return;
+    }
+});
+}
 
 function askNewEntry(){
     inquirer.prompt(newEntryQuestions, function(newEntryAnswers) {
@@ -253,22 +305,15 @@ function askNewEntry(){
     if (newEntryAnswers.address) {
         var counter = 0;
         console.log("\nAdd the : " + newEntryAnswers.addressSelector[counter] + " address \n");
-        getAddressAnswers(entryInput, counter);
+        return getAddressAnswers(entryInput, counter);
     }
     else {
-        formatInput(entryInput);
+        addressBookArray.push(entryInput);
+        return buildTable(addressBookArray.length - 1);
+        //formatInput(entryInput);
     }
 	});
 }
-
-//call function to get users input for main menu
-inquirer.prompt(mainMenuQuestions, function(mainMenuAnswers) {
-	if (mainMenuAnswers.mainMenuInput === 1) {
-	    //gets the new persons info and info about how many address to enter
-	    askNewEntry();
-    }
-});
-
 
                 
 function getAddressAnswers(currentEntry, counter){
@@ -281,45 +326,140 @@ function getAddressAnswers(currentEntry, counter){
             getAddressAnswers(currentEntry, counter); 
         }
         else {
-            formatInput(currentEntry);
+            addressBookArray.push(currentEntry);
+            buildTable(addressBookArray.length - 1);
+            //formatInput(currentEntry);
         }
         
     });
 }
 
-function formatInput(currentEntry){
-    for (var key in currentEntry) {
-        //removes all false or empty properties
-        if (!currentEntry[key]) {
-            delete currentEntry[key];
+//searches first name, last name, and email
+function getSearchInput(){
+    var searchInput = [];
+    console.log("\n\nEnter the name you would like to search the address book for: ");
+    inquirer.prompt(searchQuestion, function(searchAnswer) {
+        //puts search input into an array and puts the search input to lowercase
+        searchInput = searchAnswer.searchName.split(" ");
+        for (var i = 0; i < searchInput.length; i++){
+            searchInput[i].toLowerCase;
         }
-    }
-    if (currentEntry["address"]) {
-        delete currentEntry["address"];
-    }
-    if (currentEntry["addressSelector"]) {
-        delete currentEntry["addressSelector"];
-    }
-    if (currentEntry.Birthday) {
-        currentEntry.Birthday = currentEntry.birthMonth + " " + currentEntry.birthDay + ", " + currentEntry.birthYear;
-        delete currentEntry.birthMonth;
-        delete currentEntry.birthDay;
-        delete currentEntry.birthYear;
-    }
-    addressBookArray.push(currentEntry);
-    console.log(addressBookArray);
-    buildTable();
+        searchAddressBook(searchInput);
+    });
 }
 
-function buildTable() {
+//
+function searchAddressBook(searchArray){
+    var addressBookPosition = [];
+    var searchResultQuestion = [ {
+        type: 'list',
+        name: 'searchMenu',
+        message: "choose one of the following options: ",
+        choices: [
+            new inquirer.Separator(),
+            { name: "Do another search",
+            value: -1},
+            { name: "Return to the Main Menu",
+            value: -2} ]
+        } 
+    ];
+
+    for (var k = 0; k < searchArray.length; k++) {
+        for (var j = 0; j < addressBookArray.length; j++) {
+            if (addressBookArray[j]["First Name"].toLowerCase().indexOf(searchArray[k]) >= 0) {
+                addressBookPosition.push(j); }
+            else if (addressBookArray[j]["Last Name"].toLowerCase().indexOf(searchArray[k]) >= 0) {
+                addressBookPosition.push(j); }
+            else {
+                for (var key in addressBookArray[j]) {
+                    if (addressBookArray[j][key]["Email"]) {
+                        var addressBookEmail = addressBookArray[j][key]["Email"].toLowerCase();
+                        if (addressBookEmail.indexOf(searchArray[k]) >= 0) {
+                            addressBookPosition.push(j); }
+                    }
+                }
+            }
+        }
+    }
+    console.log("\nYour search has produced " + addressBookPosition.length + " results");
+
+    if (addressBookPosition.length > 0){
+        for (var i = 0; i < addressBookPosition.length; i++) {
+            var searchResultName = addressBookArray[addressBookPosition[i]]["Last Name"] + ", " + addressBookArray[addressBookPosition[i]]["First Name"];
+            searchResultQuestion[0].choices.unshift({name: searchResultName, value: addressBookPosition[i]});
+        }
+    }
+    searchResultMenu(searchResultQuestion);
+}
+
+//asks the user what to once the search is complete
+function searchResultMenu(searchResultQuestion){
+    inquirer.prompt(searchResultQuestion, function(searchResultAnswer) {
+        if (searchResultAnswer.searchMenu >= 0) { 
+            buildTable(searchResultAnswer.searchMenu);  //view the selected result in a table
+            return viewSearchResult(searchResultAnswer.searchMenu); //calls prompt for next set of questions
+        }
+        if (searchResultAnswer.searchMenu === -1) {  
+            return getSearchInput(); } //do another search
+        if (searchResultAnswer.searchMenu === -2) { 
+            return mainMenu(); } //returns to main menu
+    });
+}
+
+function viewSearchResult(currentEntry){
+    inquirer.prompt(viewSearchQuestion, function(viewSearchAnswer) {
+        if (viewSearchAnswer.viewSearch === "edit") {
+            //some code
+        }
+        if (viewSearchAnswer.viewSearch === "delete" && viewSearchAnswer.confirmDelete) {
+            addressBookArray.splice(currentEntry, 1);
+            console.log("Entry Deleted");
+            return mainMenu(); }
+        else {
+            return mainMenu(); } //returns to main menu
+    });
+}
+
+
+function editEntry(currentEntry){
+    var editQuestions = mainMenuQuestions;
+    for (var key in addressBookArray(currentEntry)) {
+    }
+}
+
+
+
+
+// function formatInput(currentEntry){
+//     //removes all false or empty properties for display purposes
+//     for (var key in currentEntry) {
+//         if (!currentEntry[key]) {
+//             delete currentEntry[key]; }
+//     }
+//     if (currentEntry["address"]) {
+//         delete currentEntry["address"]; 
+//         delete currentEntry["addressSelector"]; 
+//     }
+//     if (currentEntry.Birthday) {
+//         currentEntry.Birthday = currentEntry.birthMonth + " " + currentEntry.birthDay + ", " + currentEntry.birthYear;
+//         delete currentEntry.birthMonth;
+//         delete currentEntry.birthDay;
+//         delete currentEntry.birthYear;
+//     }
+//     addressBookArray.push(currentEntry);
+//     buildTable(addressBookArray.length - 1);
+// }
+
+function buildTable(arrayPosition) {
     var table = new Table();
-    var entryPosition = addressBookArray[addressBookArray.length - 1];
+    var entryPosition = addressBookArray[arrayPosition];
     var displayAddress = "";
     var displayPhone = "";
     var displayEmail = "";
+    var displayBirthday = "";
     for (var key in entryPosition) {
         //if key is an object containing an address
-        if (typeof entryPosition[key] === "object") {
+        if (typeof entryPosition[key] === "object" && key !== 'addressSelector') {
             var addressKey = entryPosition[key];
             displayAddress = addressKey.Address1 + ", " + addressKey.Address2 + "\n";
             displayAddress += addressKey.City + ", " + addressKey.Province + ", " + addressKey["Postal Code"] + "\n";
@@ -333,7 +473,10 @@ function buildTable() {
             }
             table.push([key + " Address", displayAddress]);    
         }
-        else {
+        else if (key === "Birthday" && entryPosition[key]) {
+            displayBirthday = entryPosition.birthMonth + " " + entryPosition.birthDay + ", " + entryPosition.birthYear;
+            table.push([key, displayBirthday]); }
+        else if (typeof entryPosition[key]!== 'boolean' && key !== 'address' && key !== 'addressSelector' && key.indexOf("birth") < 0) {
             table.push([key, entryPosition[key]]);
         }
     }
@@ -347,7 +490,7 @@ function buildTable() {
 }
 
 //filler for testing the addressBook Array 
-addressBookArray[1] = {
+addressBookArray[0] = {
     'First Name': 'Kayla',
     'Last Name': 'Hennig',
     Birthday: 'July 30, 1990',
@@ -366,7 +509,7 @@ addressBookArray[1] = {
      }
 };
 
-addressBookArray[2] = {
+addressBookArray[1] = {
     'First Name': 'David',
     'Last Name': 'Fortin',
     Birthday: 'January 4, 1987',
@@ -404,7 +547,7 @@ addressBookArray[2] = {
        emailSelector: true,
        Email: 'david.fortin@mail.com' } 
 };
-addressBookArray[3] = {
+addressBookArray[2] = {
     'First Name': 'Beijo',
     'Last Name': 'Hennig',
     Birthday: 'January 18, 1909',
@@ -431,3 +574,13 @@ addressBookArray[3] = {
        emailSelector: true,
        Email: 'beijo.the.dog@mail.com' } 
 };
+
+//call function to start the program
+mainMenu();
+// for (var key in newEntryQuestions) {
+// console.log(newEntryQuestions[key]["name"])
+// }
+
+// for (var key in addressBookArray[0]) {
+// console.log(addressBookArray[key])
+// }
