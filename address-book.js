@@ -117,6 +117,7 @@ var newEntryQuestions = [
 ];
 
 //list of prompts if the user selects the option to enter an address
+ 
 var newAddressQuestions = [
     {
         type: 'input',
@@ -236,8 +237,10 @@ var newAddressQuestions = [
         },
         when: function(newAddressAnswers) {
             return newAddressAnswers.emailSelector; }
-    },
+    }
 ];
+
+var addressQuestionArray = [newAddressQuestions, newAddressQuestions, newAddressQuestions];
 
 //prompts for the search function
 var searchQuestion = [
@@ -271,7 +274,10 @@ var viewSearchQuestion = [
         type: 'confirm',
         name: 'confirmDelete',
         message: 'Are you sure you want to delete this entry?',
-        default: false
+        default: false,
+        when: function(viewSearchAnswer){
+            return viewSearchAnswer.viewSearch === 'delete';
+        }
     },
 ];
 
@@ -285,12 +291,10 @@ console.log("\nMain Menu");
 //call function to get users input for main menu
 inquirer.prompt(mainMenuQuestions, function(mainMenuAnswers) {
 	if (mainMenuAnswers.mainMenuInput === 1) {
-	    //calls function to begin new entry prompts
-	    return askNewEntry();
+	    return askNewEntry(newEntryQuestions, addressQuestionArray, true);  //calls function to begin new entry prompts
     }
     else if (mainMenuAnswers.mainMenuInput === 2) {
-        //calls function to begin search prompts
-        return getSearchInput();
+        return getSearchInput(); //calls function to begin search prompts
     }
     else {
         console.log("\ngoodbye");
@@ -299,38 +303,43 @@ inquirer.prompt(mainMenuQuestions, function(mainMenuAnswers) {
 });
 }
 
-function askNewEntry(){
-    inquirer.prompt(newEntryQuestions, function(newEntryAnswers) {
+function askNewEntry(entryQuestions, addressQuestions, newEntry, position){
+    inquirer.prompt(entryQuestions, function(newEntryAnswers) {
         var entryInput = newEntryAnswers;
-    if (newEntryAnswers.address) {
+    if (newEntryAnswers.address || entryInput.addressSelector.length > 0) {
         var counter = 0;
         console.log("\nAdd the : " + newEntryAnswers.addressSelector[counter] + " address \n");
-        return getAddressAnswers(entryInput, counter);
+        return getAddressAnswers(addressQuestions, entryInput, counter, newEntry, position);
+    }
+    else if (!newEntry) {
+        addressBookArray[position] = entryInput;
+        return buildTable(position);
     }
     else {
         addressBookArray.push(entryInput);
         return buildTable(addressBookArray.length - 1);
-        //formatInput(entryInput);
     }
 	});
 }
 
                 
-function getAddressAnswers(currentEntry, counter){
-    inquirer.prompt(newAddressQuestions, function(newAddressAnswers) {
+function getAddressAnswers(addressQuestions, currentEntry, counter, newEntry, position){
+    inquirer.prompt(addressQuestions[counter], function(newAddressAnswers) {
         var addressProperty = currentEntry.addressSelector[counter];
         currentEntry[addressProperty] = newAddressAnswers;
         counter +=1;
         if (counter < currentEntry.addressSelector.length) {
             console.log("\nAdd the : " + currentEntry.addressSelector[counter] + " address \n");
-            getAddressAnswers(currentEntry, counter); 
+            getAddressAnswers(addressQuestions, currentEntry, counter, newEntry, position); 
+        }
+        else if (!newEntry) {
+            addressBookArray[position] = currentEntry;
+            return buildTable(position);
         }
         else {
             addressBookArray.push(currentEntry);
-            buildTable(addressBookArray.length - 1);
-            //formatInput(currentEntry);
+            return buildTable(addressBookArray.length - 1);
         }
-        
     });
 }
 
@@ -340,15 +349,12 @@ function getSearchInput(){
     console.log("\n\nEnter the name you would like to search the address book for: ");
     inquirer.prompt(searchQuestion, function(searchAnswer) {
         //puts search input into an array and puts the search input to lowercase
-        searchInput = searchAnswer.searchName.split(" ");
-        for (var i = 0; i < searchInput.length; i++){
-            searchInput[i].toLowerCase;
-        }
+        searchInput = searchAnswer.searchName.toLowerCase().split(" ");
         searchAddressBook(searchInput);
     });
 }
 
-//
+//prompt for what to do with search results
 function searchAddressBook(searchArray){
     var addressBookPosition = [];
     var searchResultQuestion = [ {
@@ -409,9 +415,9 @@ function searchResultMenu(searchResultQuestion){
 function viewSearchResult(currentEntry){
     inquirer.prompt(viewSearchQuestion, function(viewSearchAnswer) {
         if (viewSearchAnswer.viewSearch === "edit") {
-            //some code
+            editEntry(currentEntry);
         }
-        if (viewSearchAnswer.viewSearch === "delete" && viewSearchAnswer.confirmDelete) {
+        else if (viewSearchAnswer.viewSearch === "delete" && viewSearchAnswer.confirmDelete) {
             addressBookArray.splice(currentEntry, 1);
             console.log("Entry Deleted");
             return mainMenu(); }
@@ -420,35 +426,66 @@ function viewSearchResult(currentEntry){
     });
 }
 
-
 function editEntry(currentEntry){
-    var editQuestions = mainMenuQuestions;
-    for (var key in addressBookArray(currentEntry)) {
+    var editQuestions = newEntryQuestions;
+    var editAddress = addressQuestionArray;
+    for (var entryKey in editQuestions) {
+        for (var addressKey in addressBookArray[currentEntry]) {
+            if (addressKey === editQuestions[entryKey]["name"]) {
+                editQuestions[entryKey]['default'] = addressBookArray[currentEntry][addressKey];
+            }
+        }
     }
+    if (addressBookArray[currentEntry].Birthday) {
+        for (var key in editQuestions){
+            if (editQuestions[key]["name"].indexOf('birth') >= 0) {
+                delete editQuestions[key]["when"];
+            }
+        }
+        editQuestions.splice(2,1);
+    }
+    if (addressBookArray[currentEntry].address) {
+        for (var key in editQuestions){
+            if (editQuestions[key]["name"] === "addressSelector") {
+                editQuestions[key]["validate"] = function(address) {
+                    if (address.length >= addressBookArray[currentEntry].addressSelector.length) {
+                        return true;    
+                    }
+                    else { 
+                        return "you must select the same or more options as the current entry"; }
+                }
+            delete editQuestions[key]["when"];
+            }
+        }
+    }
+    for (var i = 0; i < addressBookArray[currentEntry].addressSelector.length; i++) {
+        var addressName = addressBookArray[currentEntry].addressSelector[i];
+            for (var entryKey in editAddress[i]) {
+                for (var key in addressBookArray[currentEntry][addressName]) {    
+                    if (editAddress[i][entryKey]["name"] === key){
+                        editAddress[i][entryKey]["default"] = addressBookArray[currentEntry][addressName][key];
+                }
+            }
+        }
+    }
+    
+    askNewEntry(editQuestions, editAddress, false, currentEntry);
 }
+        
+
+// console.log(addressBookArray[1].Home)
+// var test = addressBookArray[1].addressSelector[1]
+// console.log(addressBookArray[1][test])
 
 
 
 
-// function formatInput(currentEntry){
-//     //removes all false or empty properties for display purposes
-//     for (var key in currentEntry) {
-//         if (!currentEntry[key]) {
-//             delete currentEntry[key]; }
-//     }
-//     if (currentEntry["address"]) {
-//         delete currentEntry["address"]; 
-//         delete currentEntry["addressSelector"]; 
-//     }
-//     if (currentEntry.Birthday) {
-//         currentEntry.Birthday = currentEntry.birthMonth + " " + currentEntry.birthDay + ", " + currentEntry.birthYear;
-//         delete currentEntry.birthMonth;
-//         delete currentEntry.birthDay;
-//         delete currentEntry.birthYear;
-//     }
-//     addressBookArray.push(currentEntry);
-//     buildTable(addressBookArray.length - 1);
-// }
+
+
+
+
+
+
 
 function buildTable(arrayPosition) {
     var table = new Table();
@@ -493,7 +530,12 @@ function buildTable(arrayPosition) {
 addressBookArray[0] = {
     'First Name': 'Kayla',
     'Last Name': 'Hennig',
-    Birthday: 'July 30, 1990',
+     Birthday: true,
+    birthMonth: 'January',
+    birthDay: '6',
+    birthYear: '1990',
+    address: true,
+    addressSelector: [ 'Home' ],
     Home: 
      { Address1: '1360 st. jacques',
        Address2: 'apt. 501',
@@ -512,7 +554,12 @@ addressBookArray[0] = {
 addressBookArray[1] = {
     'First Name': 'David',
     'Last Name': 'Fortin',
-    Birthday: 'January 4, 1987',
+     Birthday: true,
+    birthMonth: 'July',
+    birthDay: '10',
+    birthYear: '1890',
+    address: true,
+    addressSelector: [ 'Home', 'Office', 'Other' ],
     Home: 
      { Address1: '4 fake street',
        Address2: '',
@@ -550,7 +597,12 @@ addressBookArray[1] = {
 addressBookArray[2] = {
     'First Name': 'Beijo',
     'Last Name': 'Hennig',
-    Birthday: 'January 18, 1909',
+     Birthday: true,
+    birthMonth: 'February',
+    birthDay: '7',
+    birthYear: '1900',
+    address: true,
+    addressSelector: [ 'Office', 'Other' ],
     Office: 
      { Address1: '4567 road street',
        Address2: 'suite 201',
@@ -577,10 +629,6 @@ addressBookArray[2] = {
 
 //call function to start the program
 mainMenu();
-// for (var key in newEntryQuestions) {
-// console.log(newEntryQuestions[key]["name"])
-// }
 
-// for (var key in addressBookArray[0]) {
-// console.log(addressBookArray[key])
-// }
+
+
