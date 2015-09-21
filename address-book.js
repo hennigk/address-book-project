@@ -21,7 +21,7 @@ var mainMenuQuestions = [
 
 //questions for a new Entry
 function getNewEntryQuestions(){
-var newEntryQuestions = [
+    var newEntryQuestions = [
         {
             type: 'input',
             name: 'First Name',
@@ -117,8 +117,8 @@ var newEntryQuestions = [
     ];
     return newEntryQuestions;
 }
-//list of prompts if the user selects the option to enter an address
 
+//list of prompts if the user selects the option to enter an address
 function getAddressQuestions(){ 
     var newAddressQuestions = [
         {
@@ -285,81 +285,70 @@ var viewSearchQuestion = [
 ];
 
 
-
+//Main menu function
 function mainMenu(){
-//start of the program. 
-console.log("\nMain Menu");
-//call function to get users input for main menu
-inquirer.prompt(mainMenuQuestions, function(mainMenuAnswers) {
-	if (mainMenuAnswers.mainMenuInput === 1) {
-	    return askNewEntry(getNewEntryQuestions(), true);  //calls function to begin new entry prompts
-    }
-    else if (mainMenuAnswers.mainMenuInput === 2) {
-        return getSearchInput(); //calls function to begin search prompts
-    }
-    else {
-        console.log("\ngoodbye");
-        return;
-    }
-});
+    console.log("\nMain Menu");
+    //call function to get users input for main menu
+    inquirer.prompt(mainMenuQuestions, function(mainMenuAnswers) {
+    	if (mainMenuAnswers.mainMenuInput === 1) { //calls function to begin new entry prompts true = new entry
+    	    return askNewEntry(getNewEntryQuestions(), true);  }
+        else if (mainMenuAnswers.mainMenuInput === 2) { //calls function to begin search prompts
+            return getSearchInput(); }
+        else {
+            console.log("\ngoodbye");
+            return; }
+    });
 }
 
-function askNewEntry(entryQuestions, newEntry, position){
+function askNewEntry(entryQuestions, newEntry, position){ //questions to ask, new entry or not, position in addressbook
     inquirer.prompt(entryQuestions, function(newEntryAnswers) {
-        var entryInput = newEntryAnswers;
     if (newEntryAnswers.address) {
         var counter = 0;
         console.log("\nAdd the : " + newEntryAnswers.addressSelector[counter] + " address \n");
         if (newEntry) {
-            return getAddressAnswers(getAddressQuestions(), entryInput, counter, newEntry, position);
-        }
+            return getAddressAnswers(getAddressQuestions(), newEntryAnswers, counter, newEntry, position); }
         else {
-            editAddressQuestions(entryInput, counter, position);
-        }
+            editAddressQuestions(newEntryAnswers, counter, position); }
     }
     else if (!newEntry) {
-        addressBookArray[position] = entryInput;
+        addressBookArray[position] = newEntryAnswers;
         buildTable(position);
-        return viewSearchResult(position);
-    }
+        return viewSearchResult(position); }
     else {
-        addressBookArray.push(entryInput);
+        addressBookArray.push(newEntryAnswers);
         buildTable(addressBookArray.length - 1);
-        return viewSearchResult(addressBookArray.length - 1);
-    }
+        return viewSearchResult(addressBookArray.length - 1); }
 	});
 }
 
-                
-function getAddressAnswers(addressQuestions, currentEntry, counter, newEntry, position){
+//asks the questions about the addresses selected by the user                
+function getAddressAnswers(addressQuestions, currentEntryData, counter, newEntry, position){
     inquirer.prompt(addressQuestions, function(newAddressAnswers) {
-        var addressProperty = currentEntry.addressSelector[counter];
-        currentEntry[addressProperty] = newAddressAnswers;
+        var addressProperty = currentEntryData.addressSelector[counter];
+        currentEntryData[addressProperty] = newAddressAnswers;
         counter +=1;
-        if (counter < currentEntry.addressSelector.length) {
-            console.log("\nAdd the : " + currentEntry.addressSelector[counter] + " address \n");
+        if (counter < currentEntryData.addressSelector.length) {
+            console.log("\nAdd the : " + currentEntryData.addressSelector[counter] + " address \n");
             if (newEntry) {
-                getAddressAnswers(addressQuestions, currentEntry, counter, newEntry, position); 
-            }
+                getAddressAnswers(addressQuestions, currentEntryData, counter, newEntry, position); }
             else {
-                editAddressQuestions(currentEntry, counter, position);
-            }
+                editAddressQuestions(currentEntryData, counter, position); }
         }
         else if (!newEntry) {
-            addressBookArray[position] = currentEntry;
+            addressBookArray[position] = currentEntryData;
             buildTable(position);
             return viewSearchResult(position);
         }
         else {
-            addressBookArray.push(currentEntry);
+            addressBookArray.push(currentEntryData);
             buildTable(addressBookArray.length - 1);
-            return viewSearchResult(addressBookArray.length - 1);
-        }
+            return viewSearchResult(addressBookArray.length - 1); }
     });
 }
 
+//add the default answer for when editing an entry
 function editEntry(currentEntry){
-    var editQuestions = getNewEntryQuestions();
+    var editQuestions = getNewEntryQuestions(); //get the new entry questions
     for (var entryKey in editQuestions) {
         for (var addressKey in addressBookArray[currentEntry]) {
             if (addressKey === editQuestions[entryKey]["name"]) {
@@ -367,7 +356,7 @@ function editEntry(currentEntry){
             }
         }
     }
-    if (addressBookArray[currentEntry].Birthday) {
+    if (addressBookArray[currentEntry].Birthday) { //this is to prevent them from deleting the birthday
         for (var key in editQuestions){
             if (editQuestions[key]["name"].indexOf('birth') >= 0) {
                 delete editQuestions[key]["when"];
@@ -375,7 +364,7 @@ function editEntry(currentEntry){
         }
         editQuestions.splice(2,1);
     }
-    if (addressBookArray[currentEntry].address) {
+    if (addressBookArray[currentEntry].address) { //this is to prevent them from deleting an address by mistake
         for (var key in editQuestions){
             if (editQuestions[key]["name"] === "addressSelector") {
                 editQuestions[key]["validate"] = function(address) {
@@ -389,8 +378,10 @@ function editEntry(currentEntry){
             }
         }
     }
-    askNewEntry(editQuestions, false, currentEntry);
+    askNewEntry(editQuestions, false, currentEntry); //call the ask function with the updated questions
 }
+
+//this function edits the address questions to have their input as the default
 function editAddressQuestions(entryAnswers, counter, position) {
     var editAddress = getAddressQuestions();
     var addressSelectorPosition = addressBookArray[position].addressSelector.indexOf(entryAnswers.addressSelector[counter]);
@@ -406,7 +397,6 @@ function editAddressQuestions(entryAnswers, counter, position) {
     }
    getAddressAnswers(editAddress, entryAnswers, counter, false, position);
 }
-
 
 
 //searches first name, last name, and email
