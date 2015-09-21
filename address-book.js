@@ -1,10 +1,9 @@
 var inquirer = require("inquirer");
-var Promise = require("bluebird");
 var Table = require('cli-table');
 
-var addressBookArray = []
+var addressBookArray = [];
 
-//questions for the main menu - uses type: list
+//questions for the main menu - uses type: list  
 var mainMenuQuestions = [
     {
     type: 'list', 
@@ -20,227 +19,231 @@ var mainMenuQuestions = [
         ]
     } ];
 
-//questions for a new Enter
+//questions for a new Entry
+function getNewEntryQuestions(){
 var newEntryQuestions = [
-    {
-        type: 'input',
-        name: 'First Name',
-        message: 'First Name (mandatory): ',
-        //changes first letter of name to uppercase
-        filter: function (inputName) { 
-            var firstLetter = inputName.charAt(0).toUpperCase();
-            var remainingName = inputName.slice(1).toLowerCase();
-            return firstLetter + remainingName; },
-        //verifies that input is not a number and is longer than 1 character
-        validate: function(inputName){
-            if (!isNaN(inputName) || inputName.length < 2){
-                return "enter a valid name"; }
-            else {return true; }
-            }
-    },
-    {
-        type: 'input',
-        name: 'Last Name',
-        message: 'Last Name (mandatory): ',
-        //changes first letter of name to uppercase 
-        filter: function (inputName) { 
-            var firstLetter = inputName.charAt(0).toUpperCase();
-            var remainingName = inputName.slice(1).toLowerCase();
-            return firstLetter + remainingName; },  
-        //verifies that input is not a number and is at least 1 character
-        validate: function(inputName){
-            if (!isNaN(inputName) || inputName.length < 1){
-                return "enter a valid name"; }
-            else {return true; }
-            }
-    },
-    {
-        type: 'confirm',
-        name: 'Birthday',
-        message: 'Add Date of Birth?',
-        default: false
-    },
-    { 
-        type: 'list',
-        name: 'birthMonth',
-        message: 'Month: ', 
-        choices: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-        when: function(newEntryAnswers) {
-            return newEntryAnswers.Birthday; }
-    },
-    {
-        type: 'input',
-        name: 'birthDay',
-        message: 'Day: ',
-        validate: function(birthDay) {
-            if (birthDay > 31 || birthDay < 1 || isNaN(birthDay) ) {
-                return "Enter a valid day"; }
-            else {
-                return true;
-            }    
+        {
+            type: 'input',
+            name: 'First Name',
+            message: 'First Name (mandatory): ',
+            //changes first letter of name to uppercase
+            filter: function (inputName) { 
+                var firstLetter = inputName.charAt(0).toUpperCase();
+                var remainingName = inputName.slice(1).toLowerCase();
+                return firstLetter + remainingName; },
+            //verifies that input is not a number and is longer than 1 character
+            validate: function(inputName){
+                if (!isNaN(inputName) || inputName.length < 2){
+                    return "enter a valid name"; }
+                else {return true; }
+                }
         },
-        when: function(newEntryAnswers) {
-            return newEntryAnswers.Birthday; }
-    },
-    {
-        type: 'input',
-        name: 'birthYear',
-        message: 'Year: ',
-        validate: function(birthYear) {
-            if (birthYear > 2015 || birthYear < 1000 || isNaN(birthYear) ) {
-                return "Enter a valid year"; }
-            else {
-                return true;
-            }    
+        {
+            type: 'input',
+            name: 'Last Name',
+            message: 'Last Name (mandatory): ',
+            //changes first letter of name to uppercase 
+            filter: function (inputName) { 
+                var firstLetter = inputName.charAt(0).toUpperCase();
+                var remainingName = inputName.slice(1).toLowerCase();
+                return firstLetter + remainingName; },  
+            //verifies that input is not a number and is at least 1 character
+            validate: function(inputName){
+                if (!isNaN(inputName) || inputName.length < 1){
+                    return "enter a valid name"; }
+                else {return true; }
+                }
         },
-        when: function(newEntryAnswers) {
-            return newEntryAnswers.Birthday; }
-    },
-    {
-        type: 'confirm',
-        name: 'address',
-        message: 'Add an Address?',
-        default: false
-    },
-    {
-        type: "checkbox",
-        name: "addressSelector",
-        message: "Add an Address for (select all that apply) \n use <space> to select, and <enter> to submit",
-        choices: [{name: 'Home', checked: true}, 'Office', 'Other'],
-        validate: function(addressSelector) {
-            if (addressSelector.length < 1 ) { return "you must select an address"; }
-            else { return true; }
+        {
+            type: 'confirm',
+            name: 'Birthday',
+            message: 'Add Date of Birth?',
+            default: false
         },
-        when: function(newEntryAnswers) {
-            return newEntryAnswers.address; }
-    },
-];
-
+        { 
+            type: 'list',
+            name: 'birthMonth',
+            message: 'Month: ', 
+            choices: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            when: function(newEntryAnswers) {
+                return newEntryAnswers.Birthday; }
+        },
+        {
+            type: 'input',
+            name: 'birthDay',
+            message: 'Day: ',
+            validate: function(birthDay) {
+                if (birthDay > 31 || birthDay < 1 || isNaN(birthDay) ) {
+                    return "Enter a valid day"; }
+                else {
+                    return true;
+                }    
+            },
+            when: function(newEntryAnswers) {
+                return newEntryAnswers.Birthday; }
+        },
+        {
+            type: 'input',
+            name: 'birthYear',
+            message: 'Year: ',
+            validate: function(birthYear) {
+                if (birthYear > 2015 || birthYear < 1000 || isNaN(birthYear) ) {
+                    return "Enter a valid year"; }
+                else {
+                    return true;
+                }    
+            },
+            when: function(newEntryAnswers) {
+                return newEntryAnswers.Birthday; }
+        },
+        {
+            type: 'confirm',
+            name: 'address',
+            message: 'Add an Address?',
+            default: false
+        },
+        {
+            type: "checkbox",
+            name: "addressSelector",
+            message: "Add an Address for (select all that apply) \n use <space> to select, and <enter> to submit",
+            choices: ['Home', 'Office', 'Other'],
+            validate: function(addressSelector) {
+                if (addressSelector.length < 1 ) { return "you must select an address"; }
+                else { return true; }
+            },
+            when: function(newEntryAnswers) {
+                return newEntryAnswers.address; }
+        },
+    ];
+    return newEntryQuestions;
+}
 //list of prompts if the user selects the option to enter an address
- 
-var newAddressQuestions = [
-    {
-        type: 'input',
-        name: 'Address1',
-        message: "Address line 1: ",
-        validate: function(address1) {
-            if (!address1 || address1.length < 2) { return "Enter a valid address"; }
-            else { return true; }
-        }
-    },
-    {
-        type: 'input',
-        name: 'Address2',
-        message: "Address line 2 (optional): ",
-    },
-    {
-        type: 'input',
-        name: 'City',
-        message: "City: ",
-        //changes first letter of city to uppercase
-        filter: function (inputName) { 
-            var firstLetter = inputName.charAt(0).toUpperCase();
-            var remainingName = inputName.slice(1).toLowerCase();
-            return firstLetter + remainingName; },
-        validate: function(city) {
-            if (!city || city.length < 2) { return "Enter a valid city"; }
-            else { return true; }
-        }
-    },
-    {
-        //this is valid for Canadian residents only
-        type: 'list',
-        name: 'Province',
-        message: "Province: ",
-        choices: ["AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PEI", "QC", "SK", "YT"]
-    },
-    {
-        //this is valid for Canadian residents only
-        type: 'input',
-        name: 'Postal Code',
-        message: "Postal Code: ",
-        filter: function(postalCode) {
-            var validPostCode = postalCode.replace(/\s+/g, '').toUpperCase(); //removes any spaces and changes it to uppercase
-            return validPostCode.substr(0,3) + " " + validPostCode.substr(3,3);
-        },
-        validate: function(postalCode) {
-            var validPostCode = postalCode.replace(/\s+/g, '');
-            var postValidator = true;
-            if (validPostCode.length !== 6) {
-                postValidator = false;
-            }
-            for (var i = 0; i < validPostCode.length; i=i+2) {
-                if (!isNaN(validPostCode.charAt(i))) { //verify that that there is a string at position 0, 2, 4 
-                    postValidator = false; }
-                if (isNaN(validPostCode.charAt(i+1))){  //verify that that there is a number at position 1, 3,5 
-                    postValidator = false }
-            }
-            return postValidator || "enter a valid postal code";
-        }
-    },
-    {
-        type: 'input',
-        name: 'Country',
-        message: 'Country: ',
-        default: 'Canada',
-        validate: function(country) {
-            if (!country) { return "Enter a valid country"; }
-            else { return true; }
-        } 
-    },
-    {
-        type: 'confirm',
-        name: 'phoneSelector',
-        message: 'Add a fax or phone number for this address?',
-        default: false
-    },
-    {
-        type: 'list',
-        name: 'Phone Type',
-        message: 'Phone Type: ',
-        choices: ['cellular', 'landline', 'fax'],
-        when: function(newAddressAnswers) {
-            return newAddressAnswers.phoneSelector; }
-    },
-    {
-        type: 'input',
-        name: 'Phone Number',
-        message: "Number: ",
-        validate: function(phoneNumber) { //checks length and if a number
-            var valid = phoneNumber.replace(/\s|\-/g, '');
-            if (isNaN(valid) || valid.length < 10) {
-                return "Enter a valid phone number" }
-            else {return true};
-        },
-        filter: function(phoneNumber) { 
-            var valid = phoneNumber.replace(/\s|\-/g, '');
-            var formattedNumber = valid.substr(0, 3) + "-" + valid.substr(3, 3) + "-" + valid.substr(6);
-            return formattedNumber;
-        },
-        when: function(newAddressAnswers) {
-            return newAddressAnswers.phoneSelector ; }
-    },
-    {
-        type: 'confirm',
-        name: 'emailSelector',
-        message: 'Add an email address for this address?',
-        default: false
-    },
-    {
-        type: 'input',
-        name: 'Email',
-        message: "Email Address: ",
-        validate: function(email) { 
-            if (email.indexOf(".") > 0 && email.indexOf("@") > 0) {
-                return true; }
-            else { return "enter a valid email address"; }
-        },
-        when: function(newAddressAnswers) {
-            return newAddressAnswers.emailSelector; }
-    }
-];
 
-var addressQuestionArray = [newAddressQuestions, newAddressQuestions, newAddressQuestions];
+function getAddressQuestions(){ 
+    var newAddressQuestions = [
+        {
+            type: 'input',
+            name: 'Address1',
+            message: "Address line 1: ",
+            validate: function(address1) {
+                if (!address1 || address1.length < 2) { return "Enter a valid address"; }
+                else { return true; }
+            }
+        },
+        {
+            type: 'input',
+            name: 'Address2',
+            message: "Address line 2 (optional): ",
+        },
+        {
+            type: 'input',
+            name: 'City',
+            message: "City: ",
+            //changes first letter of city to uppercase
+            filter: function (inputName) { 
+                var firstLetter = inputName.charAt(0).toUpperCase();
+                var remainingName = inputName.slice(1).toLowerCase();
+                return firstLetter + remainingName; },
+            validate: function(city) {
+                if (!city || city.length < 2) { return "Enter a valid city"; }
+                else { return true; }
+            }
+        },
+        {
+            //this is valid for Canadian residents only
+            type: 'list',
+            name: 'Province',
+            message: "Province: ",
+            choices: ["AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PEI", "QC", "SK", "YT"]
+        },
+        {
+            //this is valid for Canadian residents only
+            type: 'input',
+            name: 'Postal Code',
+            message: "Postal Code: ",
+            filter: function(postalCode) {
+                var validPostCode = postalCode.replace(/\s+/g, '').toUpperCase(); //removes any spaces and changes it to uppercase
+                return validPostCode.substr(0,3) + " " + validPostCode.substr(3,3);
+            },
+            validate: function(postalCode) {
+                var validPostCode = postalCode.replace(/\s+/g, '');
+                var postValidator = true;
+                if (validPostCode.length !== 6) {
+                    postValidator = false;
+                }
+                for (var i = 0; i < validPostCode.length; i=i+2) {
+                    if (!isNaN(validPostCode.charAt(i))) { //verify that that there is a string at position 0, 2, 4 
+                        postValidator = false; }
+                    if (isNaN(validPostCode.charAt(i+1))){  //verify that that there is a number at position 1, 3,5 
+                        postValidator = false }
+                }
+                return postValidator || "enter a valid postal code";
+            }
+        },
+        {
+            type: 'input',
+            name: 'Country',
+            message: 'Country: ',
+            default: 'Canada',
+            validate: function(country) {
+                if (!country) { return "Enter a valid country"; }
+                else { return true; }
+            } 
+        },
+        {
+            type: 'confirm',
+            name: 'phoneSelector',
+            message: 'Add a fax or phone number for this address?',
+            default: false
+        },
+        {
+            type: 'list',
+            name: 'Phone Type',
+            message: 'Phone Type: ',
+            choices: ['cellular', 'landline', 'fax'],
+            when: function(newAddressAnswers) {
+                return newAddressAnswers.phoneSelector; }
+        },
+        {
+            type: 'input',
+            name: 'Phone Number',
+            message: "Number: ",
+            validate: function(phoneNumber) { //checks length and if a number
+                var valid = phoneNumber.replace(/\s|\-/g, '');
+                if (isNaN(valid) || valid.length < 10) {
+                    return "Enter a valid phone number" }
+                else {return true};
+            },
+            filter: function(phoneNumber) { 
+                var valid = phoneNumber.replace(/\s|\-/g, '');
+                var formattedNumber = valid.substr(0, 3) + "-" + valid.substr(3, 3) + "-" + valid.substr(6);
+                return formattedNumber;
+            },
+            when: function(newAddressAnswers) {
+                return newAddressAnswers.phoneSelector ; }
+        },
+        {
+            type: 'confirm',
+            name: 'emailSelector',
+            message: 'Add an email address for this address?',
+            default: false
+        },
+        {
+            type: 'input',
+            name: 'Email',
+            message: "Email Address: ",
+            validate: function(email) { 
+                if (email.indexOf(".") > 0 && email.indexOf("@") > 0) {
+                    return true; }
+                else { return "enter a valid email address"; }
+            },
+            when: function(newAddressAnswers) {
+                return newAddressAnswers.emailSelector; }
+        }
+    ];
+    return newAddressQuestions;
+}
+
 
 //prompts for the search function
 var searchQuestion = [
@@ -283,15 +286,13 @@ var viewSearchQuestion = [
 
 
 
-
-
 function mainMenu(){
 //start of the program. 
 console.log("\nMain Menu");
 //call function to get users input for main menu
 inquirer.prompt(mainMenuQuestions, function(mainMenuAnswers) {
 	if (mainMenuAnswers.mainMenuInput === 1) {
-	    return askNewEntry(newEntryQuestions, addressQuestionArray, true);  //calls function to begin new entry prompts
+	    return askNewEntry(getNewEntryQuestions(), true);  //calls function to begin new entry prompts
     }
     else if (mainMenuAnswers.mainMenuInput === 2) {
         return getSearchInput(); //calls function to begin search prompts
@@ -303,45 +304,110 @@ inquirer.prompt(mainMenuQuestions, function(mainMenuAnswers) {
 });
 }
 
-function askNewEntry(entryQuestions, addressQuestions, newEntry, position){
+function askNewEntry(entryQuestions, newEntry, position){
     inquirer.prompt(entryQuestions, function(newEntryAnswers) {
         var entryInput = newEntryAnswers;
-    if (newEntryAnswers.address || entryInput.addressSelector.length > 0) {
+    if (newEntryAnswers.address) {
         var counter = 0;
         console.log("\nAdd the : " + newEntryAnswers.addressSelector[counter] + " address \n");
-        return getAddressAnswers(addressQuestions, entryInput, counter, newEntry, position);
+        if (newEntry) {
+            return getAddressAnswers(getAddressQuestions(), entryInput, counter, newEntry, position);
+        }
+        else {
+            editAddressQuestions(entryInput, counter, position);
+        }
     }
     else if (!newEntry) {
         addressBookArray[position] = entryInput;
-        return buildTable(position);
+        buildTable(position);
+        return viewSearchResult(position);
     }
     else {
         addressBookArray.push(entryInput);
-        return buildTable(addressBookArray.length - 1);
+        buildTable(addressBookArray.length - 1);
+        return viewSearchResult(addressBookArray.length - 1);
     }
 	});
 }
 
                 
 function getAddressAnswers(addressQuestions, currentEntry, counter, newEntry, position){
-    inquirer.prompt(addressQuestions[counter], function(newAddressAnswers) {
+    inquirer.prompt(addressQuestions, function(newAddressAnswers) {
         var addressProperty = currentEntry.addressSelector[counter];
         currentEntry[addressProperty] = newAddressAnswers;
         counter +=1;
         if (counter < currentEntry.addressSelector.length) {
             console.log("\nAdd the : " + currentEntry.addressSelector[counter] + " address \n");
-            getAddressAnswers(addressQuestions, currentEntry, counter, newEntry, position); 
+            if (newEntry) {
+                getAddressAnswers(addressQuestions, currentEntry, counter, newEntry, position); 
+            }
+            else {
+                editAddressQuestions(currentEntry, counter, position);
+            }
         }
         else if (!newEntry) {
             addressBookArray[position] = currentEntry;
-            return buildTable(position);
+            buildTable(position);
+            return viewSearchResult(position);
         }
         else {
             addressBookArray.push(currentEntry);
-            return buildTable(addressBookArray.length - 1);
+            buildTable(addressBookArray.length - 1);
+            return viewSearchResult(addressBookArray.length - 1);
         }
     });
 }
+
+function editEntry(currentEntry){
+    var editQuestions = getNewEntryQuestions();
+    for (var entryKey in editQuestions) {
+        for (var addressKey in addressBookArray[currentEntry]) {
+            if (addressKey === editQuestions[entryKey]["name"]) {
+                editQuestions[entryKey]['default'] = addressBookArray[currentEntry][addressKey];
+            }
+        }
+    }
+    if (addressBookArray[currentEntry].Birthday) {
+        for (var key in editQuestions){
+            if (editQuestions[key]["name"].indexOf('birth') >= 0) {
+                delete editQuestions[key]["when"];
+            }
+        }
+        editQuestions.splice(2,1);
+    }
+    if (addressBookArray[currentEntry].address) {
+        for (var key in editQuestions){
+            if (editQuestions[key]["name"] === "addressSelector") {
+                editQuestions[key]["validate"] = function(address) {
+                    if (address.length >= addressBookArray[currentEntry].addressSelector.length) {
+                        return true;    
+                    }
+                    else { 
+                        return "you must select the same or more options as the current entry"; }
+                };
+            delete editQuestions[key]["when"];
+            }
+        }
+    }
+    askNewEntry(editQuestions, false, currentEntry);
+}
+function editAddressQuestions(entryAnswers, counter, position) {
+    var editAddress = getAddressQuestions();
+    var addressSelectorPosition = addressBookArray[position].addressSelector.indexOf(entryAnswers.addressSelector[counter]);
+    if (addressSelectorPosition >= 0){
+        var addressName = addressBookArray[position].addressSelector[addressSelectorPosition];
+        for (var j=0; j < editAddress.length; j++) {
+            for (var key in addressBookArray[position][addressName]) { 
+                if (editAddress[j]["name"] === key) {
+                    editAddress[j]["default"] = addressBookArray[position][addressName][key];
+                }
+            }
+        }
+    }
+   getAddressAnswers(editAddress, entryAnswers, counter, false, position);
+}
+
+
 
 //searches first name, last name, and email
 function getSearchInput(){
@@ -425,67 +491,6 @@ function viewSearchResult(currentEntry){
             return mainMenu(); } //returns to main menu
     });
 }
-
-function editEntry(currentEntry){
-    var editQuestions = newEntryQuestions;
-    var editAddress = addressQuestionArray;
-    for (var entryKey in editQuestions) {
-        for (var addressKey in addressBookArray[currentEntry]) {
-            if (addressKey === editQuestions[entryKey]["name"]) {
-                editQuestions[entryKey]['default'] = addressBookArray[currentEntry][addressKey];
-            }
-        }
-    }
-    if (addressBookArray[currentEntry].Birthday) {
-        for (var key in editQuestions){
-            if (editQuestions[key]["name"].indexOf('birth') >= 0) {
-                delete editQuestions[key]["when"];
-            }
-        }
-        editQuestions.splice(2,1);
-    }
-    if (addressBookArray[currentEntry].address) {
-        for (var key in editQuestions){
-            if (editQuestions[key]["name"] === "addressSelector") {
-                editQuestions[key]["validate"] = function(address) {
-                    if (address.length >= addressBookArray[currentEntry].addressSelector.length) {
-                        return true;    
-                    }
-                    else { 
-                        return "you must select the same or more options as the current entry"; }
-                }
-            delete editQuestions[key]["when"];
-            }
-        }
-    }
-    for (var i = 0; i < addressBookArray[currentEntry].addressSelector.length; i++) {
-        var addressName = addressBookArray[currentEntry].addressSelector[i];
-            for (var entryKey in editAddress[i]) {
-                for (var key in addressBookArray[currentEntry][addressName]) {    
-                    if (editAddress[i][entryKey]["name"] === key){
-                        editAddress[i][entryKey]["default"] = addressBookArray[currentEntry][addressName][key];
-                }
-            }
-        }
-    }
-    
-    askNewEntry(editQuestions, editAddress, false, currentEntry);
-}
-        
-
-// console.log(addressBookArray[1].Home)
-// var test = addressBookArray[1].addressSelector[1]
-// console.log(addressBookArray[1][test])
-
-
-
-
-
-
-
-
-
-
 
 function buildTable(arrayPosition) {
     var table = new Table();
