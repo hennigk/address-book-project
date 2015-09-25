@@ -1,5 +1,6 @@
 var inquirer = require("inquirer");
 var Table = require('cli-table');
+var request = require('request');
 
 var addressBookArray = [];
 
@@ -496,6 +497,7 @@ function buildTable(arrayPosition) {
             displayAddress = addressKey.Address1 + ", " + addressKey.Address2 + "\n";
             displayAddress += addressKey.City + ", " + addressKey.Province + ", " + addressKey["Postal Code"] + "\n";
             displayAddress += addressKey.Country;
+            
             //if phone number was added to address
             if (addressKey["Phone Number"]) {
                 displayPhone += key + ":\n (" + addressKey["Phone Type"] + "): " + addressKey["Phone Number"] + "\n";
@@ -503,7 +505,7 @@ function buildTable(arrayPosition) {
             if (addressKey["Email"]) {
                 displayEmail += key + ": " + addressKey["Email"] + "\n";
             }
-            table.push([key + " Address", displayAddress]);    
+            table.push([key + " Address", displayAddress]);
         }
         else if (key === "Birthday" && entryPosition[key]) {
             displayBirthday = entryPosition.birthMonth + " " + entryPosition.birthDay + ", " + entryPosition.birthYear;
