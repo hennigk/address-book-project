@@ -1,7 +1,17 @@
 var inquirer = require("inquirer");
 var Table = require('cli-table');
+var mysql      = require('mysql');
+
+var connection = mysql.createConnection({
+  host     : process.env.IP,
+  user     : process.env.C9_USER,
+  password : '',
+  database : 'addressbook'
+});
 
 var addressBookArray = [];
+
+
 
 //questions for the main menu - uses type: list  
 var mainMenuQuestions = [
@@ -559,7 +569,7 @@ addressBookArray[0] = {
 addressBookArray[1] = {
     'First Name': 'David',
     'Last Name': 'Fortin',
-     Birthday: true,
+    Birthday: true,
     birthMonth: 'July',
     birthDay: '10',
     birthYear: '1890',
@@ -602,7 +612,7 @@ addressBookArray[1] = {
 addressBookArray[2] = {
     'First Name': 'Beijo',
     'Last Name': 'Hennig',
-     Birthday: true,
+    Birthday: true,
     birthMonth: 'February',
     birthDay: '7',
     birthYear: '1900',

@@ -26,6 +26,7 @@
     "bluebird": "^2.10.0",
     "cli-table": "^0.3.1",
     "inquirer": "^0.10.0",
+    "mysql": "^2.9.0",
     "prompt": "^0.2.14",
     "prompt-promise": "^1.0.3"
   }

@@ -1,0 +1,141 @@
++-----------------------+
+| Tables_in_addressbook |
++-----------------------+
+| Entry                 |
++-----------------------+
+
+mysql> DESCRIBE Entry;
++------------+----------------------+------+-----+---------+----------------+
+| Field      | Type                 | Null | Key | Default | Extra          |
++------------+----------------------+------+-----+---------+----------------+
+| id         | int(11)              | NO   | PRI | NULL    | auto_increment |
+| firstName  | varchar(40)          | NO   |     | NULL    |                |
+| lastName   | varchar(40)          | NO   |     | NULL    |                |
+| birthday   | enum('true','false') | NO   |     | NULL    |                |
+| birthMonth | varchar(40)          | YES  |     | NULL    |                |
+| birthDate  | int(2)               | YES  |     | NULL    |                |
+| birthYear  | int(4)               | YES  |     | NULL    |                |
+| address    | enum('true','false') | NO   |     | NULL    |                |
++------------+----------------------+------+-----+---------+----------------+
+
+mysql> DESCRIBE Address;
++---------------+-----------------------------------+------+-----+---------+----------------+
+| Field         | Type                              | Null | Key | Default | Extra          |
++---------------+-----------------------------------+------+-----+---------+----------------+
+| id            | int(11)                           | NO   | PRI | NULL    | auto_increment |
+| EntryId       | int(11)                           | NO   |     | NULL    |                |
+| type          | enum('home','office','work')      | NO   |     | NULL    |                |
+| address1      | varchar(200)                      | NO   |     | NULL    |                |
+| address2      | varchar(200)                      | YES  |     | NULL    |                |
+| city          | varchar(50)                       | NO   |     | NULL    |                |
+| province      | varchar(3)                        | NO   |     | NULL    |                |
+| postalCode    | varchar(8)                        | NO   |     | NULL    |                |
+| phoneSelector | enum('true','false')              | NO   |     | NULL    |                |
+| phoneType     | enum('landline','cellular','fax') | YES  |     | NULL    |                |
+| phoneNumber   | varchar(20)                       | YES  |     | NULL    |                |
+| emailSelector | enum('true','false')              | NO   |     | NULL    |                |
+| email         | varchar(200)                      | YES  |     | NULL    |                |
++---------------+-----------------------------------+------+-----+---------+----------------+
+
+mysql> SELECT * FROM Entry;                                             
++----+-----------+----------+----------+------------+-----------+-----------+---------+
+| id | firstName | lastName | birthday | birthMonth | birthDate | birthYear | address |
++----+-----------+----------+----------+------------+-----------+-----------+---------+
+|  1 | Herrod    | Conrad   | true     | February   |         2 |      1876 | false   |
+|  2 | David     | Fortin   | true     | February   |        10 |      1976 | true    |
+|  3 | Kayla     | Hennig   | true     | January    |        20 |      1990 | false   |
+|  4 | David     | Fortin   | true     | March      |         6 |      2010 | true    |
+|  5 | Beijo     | Hennig   | true     | July       |        30 |      1987 | false   |
+|  6 | Boots     | Fortin   | true     | April      |        22 |      1999 | true    |
+|  7 | Marie     | Hennig   | false    | NULL       |      NULL |      NULL | true    |
++----+-----------+----------+----------+------------+-----------+-----------+---------+
+
+mysql> SELECT * FROM Address;
++----+---------+--------+-----------------------+------------------+-----------+----------+------------+---------------+-----------+--------------+---------------+------------------------+
+| id | EntryId | type   | address1              | address2         | city      | province | postalCode | phoneSelector | phoneType | phoneNumber  | emailSelector | email                  |
++----+---------+--------+-----------------------+------------------+-----------+----------+------------+---------------+-----------+--------------+---------------+------------------------+
+|  1 |       2 | home   | 17 stonecrest         | apt. 2           | montreal  | QC       | H3C 4M4    | true          | landline  | 514-909-5159 | true          | dave@gmail.com         |
+|  2 |       2 | work   | 200 viger             | suite 200        | montreal  | QC       | H3C 2V8    | true          | cellular  | 514-872-6179 | true          | davidfortin@work.com   |
+|  3 |       4 | home   | 2323 fake street      | apt 5            | toronto   | BC       | H4C 6G2    | true          | fax       | 909-879-6178 | true          | 1234@mail.ca           |
+|  4 |       6 | work   | 2131213 mountain road | door on the left | regina    | SK       | B3F 3V9    | true          | landline  | 898-222-555  | true          | boots@email.com        |
+|  5 |       7 | home   | 1360 saint jacques    | apt. 45200       | fonthill  | ON       | H3X 5Y5    | true          | cellular  | 534-888-6667 | true          | kayla.hennig@gmail.com |
+|  6 |       7 | work   | 200 street            | NULL             | vancouver | BC       | H3D 2Y8    | false         | NULL      | NULL         | false         | NULL                   |
+|  7 |       7 | office | 555 fake street       | NULL             | montreal  | AB       | H3Y 5Z1    | true          | cellular  | 514-777-6979 | false         | NULL                   |
++----+---------+--------+-----------------------+------------------+-----------+----------+------------+---------------+-----------+--------------+---------------+------------------------+
+
+
+
+ALTER TABLE Entry ADD COLUMN firstName VARCHAR(40) NOT NULL;
+
+ALTER TABLE Entry ADD COLUMN lastName VARCHAR(40) NOT NULL;
+
+ALTER TABLE Entry ADD COLUMN birthday ENUM("true", "false") NOT NULL;
+
+ALTER TABLE Entry ADD COLUMN birthMonth VARCHAR(40) NULL;
+
+ALTER TABLE Entry ADD COLUMN birthDate int(2) NULL;
+
+ALTER TABLE Entry ADD COLUMN birthYear int(4) NULL;
+
+ALTER TABLE Entry ADD COLUMN address ENUM("true", "false") NOT NULL;
+
+ALTER TABLE Entry ADD COLUMN addressSelector ENUM("true", "false") NOT NULL;
+
+
+
+-Entry Table
+id = position in address book
+First Name - char(40) - not null
+Last Name - char(40) - not null
+Birthday: true, False - not null
+birthMonth:  - null
+birthDay: -null
+birthYear: -null
+address: true, false - not null
+??addressSelector: [ 'Home', 'Office', 'Other' ], - enum - null
+
+CREATE TABLE Address ( id  int NOT NULL AUTO_INCREMENT, PRIMARY KEY(id) );     
+
+ALTER TABLE Address ADD COLUMN EntryId int(11) NOT NULL;
+
+ALTER TABLE Address ADD COLUMN type ENUM("home", "office", "work") NOT NULL;
+
+ALTER TABLE Address ADD COLUMN address1 VARCHAR(200) NOT NULL;
+
+ALTER TABLE Address ADD COLUMN address2 VARCHAR(200) NULL;
+
+ALTER TABLE Address ADD COLUMN city VARCHAR(50) NOT NULL;
+
+ALTER TABLE Address ADD COLUMN province VARCHAR(3) NOT NULL;
+
+ALTER TABLE Address ADD COLUMN postalCode VARCHAR(8) NOT NULL;
+
+ALTER TABLE Address ADD COLUMN phoneSelector ENUM("true", "false") NOT NULL;
+
+ALTER TABLE Address ADD COLUMN phoneNumber ENUM("landline", "cellular", "fax") NULL;
+
+ALTER TABLE Address ADD COLUMN emailSelector ENUM("true", "false") NOT NULL;
+
+ALTER TABLE Address ADD COLUMN email VARCHAR(200) NULL;
+
+ALTER TABLE Address CHANGE phoneSelector phoneType ENUM( "landline", "cellular", "fax");
+
+ALTER TABLE Address ADD COLUMN phoneSelector ENUM("true", "false") NOT NULL AFTER postalCode;
+
+ALTER TABLE Address CHANGE phoneNumber phoneNumber VARCHAR(20);
+-address table:  
+id
+entryid
+type:  Home, office, work - enum
+Address1: not null
+Address2: null
+City: not null
+Province: not null
+Postal Code':  not null
+Country: 'not null',
+phoneSelector: true, false - not null
+Phone Type': 'landline', cellular, fax) enum - null
+Phone Number': null 
+emailSelector: true, false, enum not null 
+Email: null
+    
