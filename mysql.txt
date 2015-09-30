@@ -50,19 +50,18 @@ mysql> SELECT * FROM Entry;
 |  7 | Marie     | Hennig   | false    | NULL       |      NULL |      NULL | true    |
 +----+-----------+----------+----------+------------+-----------+-----------+---------+
 
-mysql> SELECT * FROM Address;
-+----+---------+--------+-----------------------+------------------+-----------+----------+------------+---------------+-----------+--------------+---------------+------------------------+
-| id | EntryId | type   | address1              | address2         | city      | province | postalCode | phoneSelector | phoneType | phoneNumber  | emailSelector | email                  |
-+----+---------+--------+-----------------------+------------------+-----------+----------+------------+---------------+-----------+--------------+---------------+------------------------+
-|  1 |       2 | home   | 17 stonecrest         | apt. 2           | montreal  | QC       | H3C 4M4    | true          | landline  | 514-909-5159 | true          | dave@gmail.com         |
-|  2 |       2 | work   | 200 viger             | suite 200        | montreal  | QC       | H3C 2V8    | true          | cellular  | 514-872-6179 | true          | davidfortin@work.com   |
-|  3 |       4 | home   | 2323 fake street      | apt 5            | toronto   | BC       | H4C 6G2    | true          | fax       | 909-879-6178 | true          | 1234@mail.ca           |
-|  4 |       6 | work   | 2131213 mountain road | door on the left | regina    | SK       | B3F 3V9    | true          | landline  | 898-222-555  | true          | boots@email.com        |
-|  5 |       7 | home   | 1360 saint jacques    | apt. 45200       | fonthill  | ON       | H3X 5Y5    | true          | cellular  | 534-888-6667 | true          | kayla.hennig@gmail.com |
-|  6 |       7 | work   | 200 street            | NULL             | vancouver | BC       | H3D 2Y8    | false         | NULL      | NULL         | false         | NULL                   |
-|  7 |       7 | office | 555 fake street       | NULL             | montreal  | AB       | H3Y 5Z1    | true          | cellular  | 514-777-6979 | false         | NULL                   |
-+----+---------+--------+-----------------------+------------------+-----------+----------+------------+---------------+-----------+--------------+---------------+------------------------+
-
+mysql> SELECT * FROM Address;                                           
++----+---------+--------+-----------------------+------------------+-----------+----------+------------+---------+---------------+-----------+--------------+---------------+------------------------+
+| id | EntryId | type   | address1              | address2         | city      | province | postalCode | country | phoneSelector | phoneType | phoneNumber  | emailSelector | email                  |
++----+---------+--------+-----------------------+------------------+-----------+----------+------------+---------+---------------+-----------+--------------+---------------+------------------------+
+|  1 |       2 | home   | 17 stonecrest         | apt. 2           | montreal  | QC       | H3C 4M4    | Canada  | true          | landline  | 514-909-5159 | true          | dave@gmail.com         |
+|  2 |       2 | work   | 200 viger             | suite 200        | montreal  | QC       | H3C 2V8    | Canada  | true          | cellular  | 514-872-6179 | true          | davidfortin@work.com   |
+|  3 |       4 | home   | 2323 fake street      | apt 5            | toronto   | BC       | H4C 6G2    | Canada  | true          | fax       | 909-879-6178 | true          | 1234@mail.ca           |
+|  4 |       6 | work   | 2131213 mountain road | door on the left | regina    | SK       | B3F 3V9    | Canada  | true          | landline  | 898-222-555  | true          | boots@email.com        |
+|  5 |       7 | home   | 1360 saint jacques    | apt. 45200       | fonthill  | ON       | H3X 5Y5    | Canada  | true          | cellular  | 534-888-6667 | true          | kayla.hennig@gmail.com |
+|  6 |       7 | work   | 200 street            | NULL             | vancouver | BC       | H3D 2Y8    | Canada  | false         | NULL      | NULL         | false         | NULL                   |
+|  7 |       7 | office | 555 fake street       | NULL             | montreal  | AB       | H3Y 5Z1    | Canada  | true          | cellular  | 514-777-6979 | false         | NULL                   |
++----+---------+--------+-----------------------+------------------+-----------+----------+------------+---------+---------------+-----------+--------------+---------------+------------------------+
 
 
 ALTER TABLE Entry ADD COLUMN firstName VARCHAR(40) NOT NULL;
@@ -121,6 +120,10 @@ ALTER TABLE Address ADD COLUMN email VARCHAR(200) NULL;
 ALTER TABLE Address CHANGE phoneSelector phoneType ENUM( "landline", "cellular", "fax");
 
 ALTER TABLE Address ADD COLUMN phoneSelector ENUM("true", "false") NOT NULL AFTER postalCode;
+
+ALTER TABLE Address ADD COLUMN country VARCHAR(40) NOT NULL AFTER postalCode;
+
+UPDATE Address SET country = "Canada"
 
 ALTER TABLE Address CHANGE phoneNumber phoneNumber VARCHAR(20);
 -address table:  

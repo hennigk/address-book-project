@@ -1,6 +1,11 @@
 var inquirer = require("inquirer");
 var Table = require('cli-table');
 var mysql      = require('mysql');
+var Promise = require('bluebird');
+Promise.promisifyAll(inquirer)
+Promise.promisifyAll(mysql);
+Promise.promisifyAll(require("mysql/lib/Connection").prototype);
+Promise.promisifyAll(require("mysql/lib/Pool").prototype);
 
 var connection = mysql.createConnection({
   host     : process.env.IP,
@@ -34,7 +39,7 @@ function getNewEntryQuestions(){
 var newEntryQuestions = [
         {
             type: 'input',
-            name: 'First Name',
+            name: 'firstName',
             message: 'First Name (mandatory): ',
             //changes first letter of name to uppercase
             filter: function (inputName) { 
@@ -50,7 +55,7 @@ var newEntryQuestions = [
         },
         {
             type: 'input',
-            name: 'Last Name',
+            name: 'lastName',
             message: 'Last Name (mandatory): ',
             //changes first letter of name to uppercase 
             filter: function (inputName) { 
@@ -66,7 +71,7 @@ var newEntryQuestions = [
         },
         {
             type: 'confirm',
-            name: 'Birthday',
+            name: 'birthday',
             message: 'Add Date of Birth?',
             default: false
         },
@@ -76,11 +81,11 @@ var newEntryQuestions = [
             message: 'Month: ', 
             choices: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
             when: function(newEntryAnswers) {
-                return newEntryAnswers.Birthday; }
+                return newEntryAnswers.birthday; }
         },
         {
             type: 'input',
-            name: 'birthDay',
+            name: 'birthDate',
             message: 'Day: ',
             validate: function(birthDay) {
                 if (birthDay > 31 || birthDay < 1 || isNaN(birthDay) ) {
@@ -90,7 +95,7 @@ var newEntryQuestions = [
                 }    
             },
             when: function(newEntryAnswers) {
-                return newEntryAnswers.Birthday; }
+                return newEntryAnswers.birthday; }
         },
         {
             type: 'input',
@@ -104,7 +109,7 @@ var newEntryQuestions = [
                 }    
             },
             when: function(newEntryAnswers) {
-                return newEntryAnswers.Birthday; }
+                return newEntryAnswers.birthday; }
         },
         {
             type: 'confirm',
@@ -116,7 +121,7 @@ var newEntryQuestions = [
             type: "checkbox",
             name: "addressSelector",
             message: "Add an Address for (select all that apply) \n use <space> to select, and <enter> to submit",
-            choices: ['Home', 'Office', 'Other'],
+            choices: ['home', 'office', 'other'],
             validate: function(addressSelector) {
                 if (addressSelector.length < 1 ) { return "you must select an address"; }
                 else { return true; }
@@ -133,7 +138,7 @@ function getAddressQuestions(){
     var newAddressQuestions = [
         {
             type: 'input',
-            name: 'Address1',
+            name: 'address1',
             message: "Address line 1: ",
             validate: function(address1) {
                 if (!address1 || address1.length < 2) { return "Enter a valid address"; }
@@ -142,12 +147,12 @@ function getAddressQuestions(){
         },
         {
             type: 'input',
-            name: 'Address2',
+            name: 'address2',
             message: "Address line 2 (optional): ",
         },
         {
             type: 'input',
-            name: 'City',
+            name: 'city',
             message: "City: ",
             //changes first letter of city to uppercase
             filter: function (inputName) { 
@@ -162,14 +167,14 @@ function getAddressQuestions(){
         {
             //this is valid for Canadian residents only
             type: 'list',
-            name: 'Province',
+            name: 'province',
             message: "Province: ",
             choices: ["AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PEI", "QC", "SK", "YT"]
         },
         {
             //this is valid for Canadian residents only
             type: 'input',
-            name: 'Postal Code',
+            name: 'postalCode',
             message: "Postal Code: ",
             filter: function(postalCode) {
                 var validPostCode = postalCode.replace(/\s+/g, '').toUpperCase(); //removes any spaces and changes it to uppercase
@@ -192,7 +197,7 @@ function getAddressQuestions(){
         },
         {
             type: 'input',
-            name: 'Country',
+            name: 'country',
             message: 'Country: ',
             default: 'Canada',
             validate: function(country) {
@@ -208,7 +213,7 @@ function getAddressQuestions(){
         },
         {
             type: 'list',
-            name: 'Phone Type',
+            name: 'phoneType',
             message: 'Phone Type: ',
             choices: ['cellular', 'landline', 'fax'],
             when: function(newAddressAnswers) {
@@ -216,7 +221,7 @@ function getAddressQuestions(){
         },
         {
             type: 'input',
-            name: 'Phone Number',
+            name: 'phoneNumber',
             message: "Number: ",
             validate: function(phoneNumber) { //checks length and if a number
                 var valid = phoneNumber.replace(/\s|\-/g, '');
@@ -240,7 +245,7 @@ function getAddressQuestions(){
         },
         {
             type: 'input',
-            name: 'Email',
+            name: 'email',
             message: "Email Address: ",
             validate: function(email) { 
                 if (email.indexOf(".") > 0 && email.indexOf("@") > 0) {
@@ -309,6 +314,7 @@ inquirer.prompt(mainMenuQuestions, function(mainMenuAnswers) {
     }
     else {
         console.log("\ngoodbye");
+        connection.end()
         return;
     }
 });
@@ -317,11 +323,17 @@ inquirer.prompt(mainMenuQuestions, function(mainMenuAnswers) {
 function askNewEntry(entryQuestions, newEntry, position){
     inquirer.prompt(entryQuestions, function(newEntryAnswers) {
         var entryInput = newEntryAnswers;
+        insertNewEntry(newEntryAnswers).then(
+            function(entryId) {
+        //insert to database here 
+        //set variable equal to function and have function return result.insertId
+        //this will be the position aka Address.EntryId
     if (newEntryAnswers.address) {
         var counter = 0;
         console.log("\nAdd the : " + newEntryAnswers.addressSelector[counter] + " address \n");
         if (newEntry) {
-            return getAddressAnswers(getAddressQuestions(), entryInput, counter, newEntry, position);
+            console.log(entryId)
+            return getAddressAnswers(getAddressQuestions(), entryInput, counter, newEntry, entryId);
         }
         else {
             editAddressQuestions(entryInput, counter, position);
@@ -338,6 +350,8 @@ function askNewEntry(entryQuestions, newEntry, position){
         return viewSearchResult(addressBookArray.length - 1);
     }
 	});
+    }
+    )
 }
 
                 
@@ -345,6 +359,10 @@ function getAddressAnswers(addressQuestions, currentEntry, counter, newEntry, po
     inquirer.prompt(addressQuestions, function(newAddressAnswers) {
         var addressProperty = currentEntry.addressSelector[counter];
         currentEntry[addressProperty] = newAddressAnswers;
+        //call add Address function here 
+        //address property = type 
+        //position = entryID
+        insertNewAddress(newAddressAnswers, position, addressProperty)
         counter +=1;
         if (counter < currentEntry.addressSelector.length) {
             console.log("\nAdd the : " + currentEntry.addressSelector[counter] + " address \n");
@@ -362,8 +380,11 @@ function getAddressAnswers(addressQuestions, currentEntry, counter, newEntry, po
         }
         else {
             addressBookArray.push(currentEntry);
-            buildTable(addressBookArray.length - 1);
-            return viewSearchResult(addressBookArray.length - 1);
+            //console.log(currentEntry);
+            buildTable(position);
+            //buildTable(addressBookArray.length - 1);
+            return viewSearchResult(position);
+            //return viewSearchResult(addressBookArray.length - 1);
         }
     });
 }
@@ -448,14 +469,14 @@ function searchAddressBook(searchArray){
 
     for (var k = 0; k < searchArray.length; k++) {
         for (var j = 0; j < addressBookArray.length; j++) {
-            if (addressBookArray[j]["First Name"].toLowerCase().indexOf(searchArray[k]) >= 0) {
+            if (addressBookArray[j].firstName.toLowerCase().indexOf(searchArray[k]) >= 0) {
                 addressBookPosition.push(j); }
-            else if (addressBookArray[j]["Last Name"].toLowerCase().indexOf(searchArray[k]) >= 0) {
+            else if (addressBookArray[j]["lastName"].toLowerCase().indexOf(searchArray[k]) >= 0) {
                 addressBookPosition.push(j); }
             else {
                 for (var key in addressBookArray[j]) {
-                    if (addressBookArray[j][key]["Email"]) {
-                        var addressBookEmail = addressBookArray[j][key]["Email"].toLowerCase();
+                    if (addressBookArray[j][key]["email"]) {
+                        var addressBookEmail = addressBookArray[j][key]["email"].toLowerCase();
                         if (addressBookEmail.indexOf(searchArray[k]) >= 0) {
                             addressBookPosition.push(j); }
                     }
@@ -467,7 +488,7 @@ function searchAddressBook(searchArray){
 
     if (addressBookPosition.length > 0){
         for (var i = 0; i < addressBookPosition.length; i++) {
-            var searchResultName = addressBookArray[addressBookPosition[i]]["Last Name"] + ", " + addressBookArray[addressBookPosition[i]]["First Name"];
+            var searchResultName = addressBookArray[addressBookPosition[i]]["lastName"] + ", " + addressBookArray[addressBookPosition[i]]["firstName"];
             searchResultQuestion[0].choices.unshift({name: searchResultName, value: addressBookPosition[i]});
         }
     }
@@ -477,7 +498,8 @@ function searchAddressBook(searchArray){
 //asks the user what to once the search is complete
 function searchResultMenu(searchResultQuestion){
     inquirer.prompt(searchResultQuestion, function(searchResultAnswer) {
-        if (searchResultAnswer.searchMenu >= 0) { 
+        if (searchResultAnswer.searchMenu >= 0) {
+            getEntry(searchResultAnswer.searchMenu + 1)
             buildTable(searchResultAnswer.searchMenu);  //view the selected result in a table
             return viewSearchResult(searchResultAnswer.searchMenu); //calls prompt for next set of questions
         }
@@ -494,6 +516,12 @@ function viewSearchResult(currentEntry){
             editEntry(currentEntry);
         }
         else if (viewSearchAnswer.viewSearch === "delete" && viewSearchAnswer.confirmDelete) {
+            connection.query("DELETE FROM Entry WHERE Entry.id="+ currentEntry + ";", function(err, results){
+                console.log("Entry Deleted");
+            })
+            connection.query("DELETE FROM Address WHERE Address.EntryId="+ currentEntry + ";", function(err, results){
+                console.log("Entry Deleted");
+            })
             addressBookArray.splice(currentEntry, 1);
             console.log("Entry Deleted");
             return mainMenu(); }
@@ -504,68 +532,69 @@ function viewSearchResult(currentEntry){
 
 function buildTable(arrayPosition) {
     var table = new Table();
-    var entryPosition = addressBookArray[arrayPosition];
-    var displayAddress = "";
-    var displayPhone = "";
-    var displayEmail = "";
-    var displayBirthday = "";
-    for (var key in entryPosition) {
-        //if key is an object containing an address
-        if (typeof entryPosition[key] === "object" && key !== 'addressSelector') {
-            var addressKey = entryPosition[key];
-            displayAddress = addressKey.Address1 + ", " + addressKey.Address2 + "\n";
-            displayAddress += addressKey.City + ", " + addressKey.Province + ", " + addressKey["Postal Code"] + "\n";
-            displayAddress += addressKey.Country;
-            //if phone number was added to address
-            if (addressKey["Phone Number"]) {
-                displayPhone += key + ":\n (" + addressKey["Phone Type"] + "): " + addressKey["Phone Number"] + "\n";
+    getEntry(arrayPosition).then(
+        function(data){
+            var displayBirthday = "";
+            table.push(["First Name", data[0].firstName]);
+            table.push(["Last Name", data[0].lastName]);
+            if (data[0].birthday === "true") {
+                displayBirthday = data[0].birthMonth + " " + data[0].birthDate + ", " + data[0].birthYear;
+                table.push(["Birthday", displayBirthday]); 
             }
-            if (addressKey["Email"]) {
-                displayEmail += key + ": " + addressKey["Email"] + "\n";
+            for (var i =0; i<data.length; i++) {    
+                var displayAddress = "";
+                var displayPhone = "";
+                var displayEmail = "";
+        
+            if (data[i].address) {
+                displayAddress = data[i].address1 + ", " + data[i].address2 + "\n";
+                displayAddress += data[i].city + ", " + data[i].province + ", " + data[i].postalCode + "\n";
+                displayAddress += data[i].country;
+                //if phone number was added to address
+                if (data[i].phoneSelector === "true") {
+                    displayPhone += data[i].type + ":\n (" + data[i].phoneType + "): " + data[i].phoneNumber + "\n";
+                }
+                if (data[i].emailSelector === "true") {
+                    displayEmail += data[i].type + ": " + data[i].email + "\n";
+                }
+                table.push([data[i].type + " address", displayAddress]);    
             }
-            table.push([key + " Address", displayAddress]);    
         }
-        else if (key === "Birthday" && entryPosition[key]) {
-            displayBirthday = entryPosition.birthMonth + " " + entryPosition.birthDay + ", " + entryPosition.birthYear;
-            table.push([key, displayBirthday]); }
-        else if (typeof entryPosition[key]!== 'boolean' && key !== 'address' && key !== 'addressSelector' && key.indexOf("birth") < 0) {
-            table.push([key, entryPosition[key]]);
-        }
-    }
     if (displayPhone) {
-       table.push(["Phone Number", displayPhone]); 
+       table.push(["phoneNumber", displayPhone]); 
     }
     if (displayEmail) {
-       table.push(["Email", displayEmail]); 
+       table.push(["email", displayEmail]); 
     }
     console.log(table.toString());
+    })
 }
 
 //filler for testing the addressBook Array 
 addressBookArray[0] = {
-    'First Name': 'Kayla',
-    'Last Name': 'Hennig',
-     Birthday: true,
+    firstName: 'Kayla',
+    lastName: 'Hennig',
+    birthday: true,
     birthMonth: 'January',
     birthDay: '6',
     birthYear: '1990',
     address: true,
     addressSelector: [ 'Home' ],
-    Home: 
-     { Address1: '1360 st. jacques',
-       Address2: 'apt. 501',
-       City: 'Montreal',
-       Province: 'QC',
-       'Postal Code': 'H3C 4M4',
-       Country: 'Canada',
+    home: 
+     { address1: '1360 st. jacques',
+       address2: 'apt. 501',
+       city: 'Montreal',
+       province: 'QC',
+       postalCode: 'H3C 4M4',
+       country: 'Canada',
        phoneSelector: true,
-       'Phone Type': 'landline',
-       'Phone Number': '546-678-9585',
+       phoneType: 'landline',
+       phoneNumber: '546-678-9585',
        emailSelector: true,
-       Email: 'kayla.hennig@gmail.com' 
+       email: 'kayla.hennig@gmail.com' 
      }
 };
-
+/*
 addressBookArray[1] = {
     'First Name': 'David',
     'Last Name': 'Fortin',
@@ -641,9 +670,67 @@ addressBookArray[2] = {
        emailSelector: true,
        Email: 'beijo.the.dog@mail.com' } 
 };
-
+*/
 //call function to start the program
 mainMenu();
 
 
+// connection.queryAsync("SELECT * FROM Entry").then(
+//     function(accounts) {
+//     	console.log(accounts[0]);
+//     }
+// );
 
+
+function insertNewEntry(newEnt) {
+    // var values = newEnt['First Name'] + "," + newEnt['Last Name'] + "," + newEnt['Birthday'] + "," + newEnt['birthMonth'] + "," + newEnt['birthDay'] + "," + newEnt['birthYear'] + "," + newEnt['address']
+    // connection.queryAsync("INSERT INTO `Entry` (`firstName`,`lastName`,`birthday`,`birthMonth`,`birthDate`,`birthYear`, `address`) VALUES (" + values + ");" )
+    var values = ""
+    var insertVal = ""
+    for (var key in newEnt) {
+        if (key !== "addressSelector") {
+            values += "'" + newEnt[key] + "',";
+            insertVal += "`"+ key + "`,"; 
+        }
+    }
+    // console.log(values);
+    // console.log(insertVal);
+    // console.log("INSERT INTO `Entry` ("+ insertVal.substr(0, values.length-1) + ") VALUES (" + values.substr(0, values.length-1) + ");")
+    return connection.queryAsync("INSERT INTO `Entry` ("+ insertVal.substr(0, insertVal.length-1) + ") VALUES (" + values.substr(0, values.length-1) + ");")
+    .then(
+        function(results) {
+        console.log(results[0].insertId)
+        return (results[0].insertId);
+        }
+    )
+}
+
+
+function insertNewAddress(newAdd, entryId, type) {
+    var values = "'" + entryId + "','" + type + "',";
+    var insertVal = "`EntryId`,`type`,";
+    for (var key in newAdd) {
+            values += "'" + newAdd[key] + "',";
+            insertVal += "`"+ key + "`,"; 
+    }
+    console.log(values);
+    console.log(insertVal);
+    connection.queryAsync("INSERT INTO `Address` ("+ insertVal.substr(0, insertVal.length-1) + ") VALUES (" + values.substr(0, values.length-1) + ");")
+    .then(
+        function(results) {
+        console.log(results[0].insertId);
+        }
+    )
+    
+    // var values = newAdd['Address1'] + "," + newAdd['Address2'] + "," + newAdd['City'] + "," + newAdd['Province'] + "," + newAdd['Country'] + "," + newAdd['phoneSelector'] + "," + newAdd['address']
+    // connection.queryAsync("INSERT INTO `Address` (`EntryId`,`type`,`address1`,`address2`,`city`,`province`,`postalCode`, `phoneSelector`,`phoneType`, `phoneNumber`,`emailSelector`, `email`) VALUES
+}
+// var addressProperty = currentEntry.addressSelector[counter];
+//         currentEntry[addressProperty] = newAddressAnswers;
+        
+function getEntry(position){
+    return connection.queryAsync("SELECT Entry.*, Address.* FROM Entry JOIN Address ON Address.EntryId = Entry.id WHERE Address.EntryId=2;").then(
+        function(results){
+            return(results[0]);
+        })
+}
